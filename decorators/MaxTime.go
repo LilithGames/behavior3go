@@ -4,8 +4,8 @@ import (
 	"time"
 
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/core"
 )
 
 /**
@@ -19,7 +19,7 @@ import (
  * @extends Decorator
 **/
 type MaxTime struct {
-	Decorator
+	core.Decorator
 	maxTime int64
 }
 
@@ -35,7 +35,7 @@ type MaxTime struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *MaxTime) Initialize(setting *BTNodeCfg) {
+func (this *MaxTime) Initialize(setting *config.BTNodeCfg) {
 	this.Decorator.Initialize(setting)
 	this.maxTime = setting.GetPropertyAsInt64("maxTime")
 	if this.maxTime < 1 {
@@ -48,7 +48,7 @@ func (this *MaxTime) Initialize(setting *BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *MaxTime) OnOpen(tick *Tick) {
+func (this *MaxTime) OnOpen(tick *core.Tick) {
 	var startTime int64 = time.Now().UnixNano() / 1000000
 	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), this.GetID())
 }
@@ -59,7 +59,7 @@ func (this *MaxTime) OnOpen(tick *Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *MaxTime) OnTick(tick *Tick) b3.Status {
+func (this *MaxTime) OnTick(tick *core.Tick) b3.Status {
 	if this.GetChild() == nil {
 		return b3.ERROR
 	}

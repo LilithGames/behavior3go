@@ -1,9 +1,5 @@
 package core
 
-import (
-	_ "fmt"
-)
-
 /**
  * A new Tick object is instantiated every tick by BehaviorTree. It is passed
  * as parameter to the nodes through the tree during the traversal.

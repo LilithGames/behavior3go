@@ -6,10 +6,10 @@ package main
 import (
 	"fmt"
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
-	. "github.com/magicsea/behavior3go/core"
-	. "github.com/magicsea/behavior3go/examples/share"
-	. "github.com/magicsea/behavior3go/loader"
+	"github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/examples/share"
+	"github.com/magicsea/behavior3go/loader"
 	"sync"
 )
 
@@ -18,18 +18,18 @@ var mapTreesByID = sync.Map{}
 
 func init() {
 	//获取子树的方法
-	SetSubTreeLoadFunc(func(id string) *BehaviorTree {
-		println("==>load subtree:",id)
+	core.SetSubTreeLoadFunc(func(id string) *core.BehaviorTree {
+		fmt.Println("==>load subtree:",id)
 		t, ok := mapTreesByID.Load(id)
 		if ok {
-			return t.(*BehaviorTree)
+			return t.(*core.BehaviorTree)
 		}
 		return nil
 	})
 }
 
 func main() {
-	projectConfig, ok := LoadRawProjectCfg("example.b3")
+	projectConfig, ok := config.LoadRawProjectCfg("example.b3")
 	if !ok {
 		fmt.Println("LoadRawProjectCfg err")
 		return
@@ -37,12 +37,12 @@ func main() {
 
 	//自定义节点注册
 	maps := b3.NewRegisterStructMaps()
-	maps.Register("Log", new(LogTest))
+	maps.Register("Log", new(share.LogTest))
 
-	var firstTree *BehaviorTree
+	var firstTree *core.BehaviorTree
 	//载入
 	for _, v := range projectConfig.Data.Trees {
-		tree := CreateBevTreeFromConfig(&v, maps)
+		tree := loader.CreateBevTreeFromConfig(&v, maps)
 		tree.Print()
 		//保存到树管理
 		println("==>store subtree:",v.ID)
@@ -53,7 +53,7 @@ func main() {
 	}
 
 	//输入板
-	board := NewBlackboard()
+	board := core.NewBlackboard()
 	//循环每一帧
 	for i := 0; i < 5; i++ {
 		firstTree.Tick(i, board)

@@ -2,7 +2,7 @@ package core
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 type ICondition interface {
@@ -25,7 +25,7 @@ func (this *Condition) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Condition) Initialize(params *BTNodeCfg) {
+func (this *Condition) Initialize(params *config.BTNodeCfg) {
 	this.BaseNode.Initialize(params)
 	//this.BaseNode.IBaseWorker = this
 }

@@ -2,11 +2,11 @@ package composites
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/core"
 )
 
 type MemPriority struct {
-	Composite
+	core.Composite
 }
 
 /**
@@ -14,7 +14,7 @@ type MemPriority struct {
  * @method open
  * @param {b3.Tick} tick A tick instance.
 **/
-func (this *MemPriority) OnOpen(tick *Tick) {
+func (this *MemPriority) OnOpen(tick *core.Tick) {
 	tick.Blackboard.Set("runningChild", 0, tick.GetTree().GetID(), this.GetID())
 }
 
@@ -24,7 +24,7 @@ func (this *MemPriority) OnOpen(tick *Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *MemPriority) OnTick(tick *Tick) b3.Status {
+func (this *MemPriority) OnTick(tick *core.Tick) b3.Status {
 	var child = tick.Blackboard.GetInt("runningChild", tick.GetTree().GetID(), this.GetID())
 	for i := child; i < this.GetChildCount(); i++ {
 		var status = this.GetChild(i).Execute(tick)

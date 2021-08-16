@@ -2,7 +2,7 @@ package core
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 type IAction interface {
@@ -34,7 +34,8 @@ type Action struct {
 func (this *Action) Ctor() {
 	this.category = b3.ACTION
 }
-func (this *Action) Initialize(params *BTNodeCfg) {
+
+func (this *Action) Initialize(params *config.BTNodeCfg) {
 
 	//this.id = b3.CreateUUID()
 	this.BaseNode.Initialize(params)

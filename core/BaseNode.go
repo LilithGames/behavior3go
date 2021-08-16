@@ -1,10 +1,8 @@
 package core
 
 import (
-	_ "fmt"
-
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 type IBaseWrapper interface {
@@ -19,7 +17,7 @@ type IBaseNode interface {
 	IBaseWrapper
 
 	Ctor()
-	Initialize(params *BTNodeCfg)
+	Initialize(params *config.BTNodeCfg)
 	GetCategory() string
 	Execute(tick *Tick) b3.Status
 	GetName() string
@@ -143,7 +141,7 @@ func (this *BaseNode) GetBaseNodeWorker() IBaseWorker {
  * @method Initialize
  * @construCtor
 **/
-func (this *BaseNode) Initialize(params *BTNodeCfg) {
+func (this *BaseNode) Initialize(params *config.BTNodeCfg) {
 	//this.id = b3.CreateUUID()
 	//this.title       = this.title || this.name
 	this.description = ""

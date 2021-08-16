@@ -2,13 +2,13 @@ package actions
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/core"
 )
 
 type Error struct {
-	Action
+	core.Action
 }
 
-func (this *Error) OnTick(tick *Tick) b3.Status {
+func (this *Error) OnTick(tick *core.Tick) b3.Status {
 	return b3.ERROR
 }

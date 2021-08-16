@@ -2,7 +2,7 @@ package decorators
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/core"
 )
 
 /**
@@ -14,7 +14,7 @@ import (
  * @extends Decorator
 **/
 type Inverter struct {
-	Decorator
+	core.Decorator
 }
 
 /**
@@ -23,7 +23,7 @@ type Inverter struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *Inverter) OnTick(tick *Tick) b3.Status {
+func (this *Inverter) OnTick(tick *core.Tick) b3.Status {
 	if this.GetChild() == nil {
 		return b3.ERROR
 	}

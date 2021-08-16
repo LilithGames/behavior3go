@@ -2,13 +2,13 @@ package actions
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/core"
 )
 
 type Runner struct {
-	Action
+	core.Action
 }
 
-func (this *Runner) OnTick(tick *Tick) b3.Status {
+func (this *Runner) OnTick(tick *core.Tick) b3.Status {
 	return b3.RUNNING
 }

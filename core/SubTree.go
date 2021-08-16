@@ -2,7 +2,7 @@ package core
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 //子树，通过Name关联树ID查找
@@ -11,7 +11,7 @@ type SubTree struct {
 	//tree *BehaviorTree
 }
 
-func (this *SubTree) Initialize(setting *BTNodeCfg) {
+func (this *SubTree) Initialize(setting *config.BTNodeCfg) {
 	this.Action.Initialize(setting)
 }
 /**

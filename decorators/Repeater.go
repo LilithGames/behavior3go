@@ -3,8 +3,8 @@ package decorators
 import (
 
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/core"
 )
 
 /**
@@ -17,7 +17,7 @@ import (
  * @extends Decorator
 **/
 type Repeater struct {
-	Decorator
+	core.Decorator
 	maxLoop int
 }
 
@@ -33,7 +33,7 @@ type Repeater struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *Repeater) Initialize(setting *BTNodeCfg) {
+func (this *Repeater) Initialize(setting *config.BTNodeCfg) {
 	this.Decorator.Initialize(setting)
 	this.maxLoop = setting.GetPropertyAsInt("maxLoop")
 	if this.maxLoop < 1 {
@@ -46,7 +46,7 @@ func (this *Repeater) Initialize(setting *BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *Repeater) OnOpen(tick *Tick) {
+func (this *Repeater) OnOpen(tick *core.Tick) {
 	tick.Blackboard.Set("i", 0, tick.GetTree().GetID(), this.GetID())
 }
 
@@ -56,7 +56,7 @@ func (this *Repeater) OnOpen(tick *Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *Repeater) OnTick(tick *Tick) b3.Status {
+func (this *Repeater) OnTick(tick *core.Tick) b3.Status {
 	//fmt.Println("tick ", this.GetTitle())
 	if this.GetChild() == nil {
 		return b3.ERROR

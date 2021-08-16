@@ -2,7 +2,7 @@ package core
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 type IDecorator interface {
@@ -28,7 +28,7 @@ func (this *Decorator) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Decorator) Initialize(params *BTNodeCfg) {
+func (this *Decorator) Initialize(params *config.BTNodeCfg) {
 	this.BaseNode.Initialize(params)
 	//this.BaseNode.IBaseWorker = this
 }

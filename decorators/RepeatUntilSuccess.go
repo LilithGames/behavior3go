@@ -2,8 +2,8 @@ package decorators
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/core"
 )
 
 /**
@@ -17,7 +17,7 @@ import (
  * @extends Decorator
 **/
 type RepeatUntilSuccess struct {
-	Decorator
+	core.Decorator
 	maxLoop int
 }
 
@@ -33,7 +33,7 @@ type RepeatUntilSuccess struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *RepeatUntilSuccess) Initialize(setting *BTNodeCfg) {
+func (this *RepeatUntilSuccess) Initialize(setting *config.BTNodeCfg) {
 	this.Decorator.Initialize(setting)
 	this.maxLoop = setting.GetPropertyAsInt("maxLoop")
 	if this.maxLoop < 1 {
@@ -46,7 +46,7 @@ func (this *RepeatUntilSuccess) Initialize(setting *BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *RepeatUntilSuccess) OnOpen(tick *Tick) {
+func (this *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
 	tick.Blackboard.Set("i", 0, tick.GetTree().GetID(), this.GetID())
 }
 
@@ -56,7 +56,7 @@ func (this *RepeatUntilSuccess) OnOpen(tick *Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *RepeatUntilSuccess) OnTick(tick *Tick) b3.Status {
+func (this *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
 	if this.GetChild() == nil {
 		return b3.ERROR
 	}

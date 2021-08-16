@@ -2,8 +2,8 @@ package actions
 
 import (
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
-	. "github.com/magicsea/behavior3go/core"
+	"github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/core"
 	"time"
 )
 
@@ -15,7 +15,7 @@ import (
  * @extends Action
 **/
 type Wait struct {
-	Action
+	core.Action
 	endTime int64
 }
 
@@ -31,7 +31,7 @@ type Wait struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *Wait) Initialize(setting *BTNodeCfg) {
+func (this *Wait) Initialize(setting *config.BTNodeCfg) {
 	this.Action.Initialize(setting)
 	this.endTime = setting.GetPropertyAsInt64("milliseconds")
 }
@@ -41,7 +41,7 @@ func (this *Wait) Initialize(setting *BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *Wait) OnOpen(tick *Tick) {
+func (this *Wait) OnOpen(tick *core.Tick) {
 	var startTime int64 = time.Now().UnixNano() / 1000000
 	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), this.GetID())
 }
@@ -52,7 +52,7 @@ func (this *Wait) OnOpen(tick *Tick) {
  * @param {Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *Wait) OnTick(tick *Tick) b3.Status {
+func (this *Wait) OnTick(tick *core.Tick) b3.Status {
 	var currTime int64 = time.Now().UnixNano() / 1000000
 	var startTime = tick.Blackboard.GetInt64("startTime", tick.GetTree().GetID(), this.GetID())
 	//fmt.Println("wait:",this.GetTitle(),tick.GetLastSubTree(),"=>", currTime-startTime)
