@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	b3 "github.com/magicsea/behavior3go"
-	. "github.com/magicsea/behavior3go/config"
+	"github.com/magicsea/behavior3go/config"
 )
 
 type IComposite interface {
@@ -32,7 +32,7 @@ func (this *Composite) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Composite) Initialize(params *BTNodeCfg) {
+func (this *Composite) Initialize(params *config.BTNodeCfg) {
 	this.BaseNode.Initialize(params)
 	//this.BaseNode.IBaseWorker = this
 	this.children = make([]IBaseNode, 0)

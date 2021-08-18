@@ -2,7 +2,6 @@ package loader
 
 import (
 	"fmt"
-	"reflect"
 	"testing"
 
 	b3 "github.com/magicsea/behavior3go"
@@ -16,16 +15,6 @@ type Test struct {
 
 func (test *Test) Print() {
 	fmt.Println(test.value)
-}
-
-func TestExample(t *testing.T) {
-	maps := createBaseStructMaps()
-	if data, err := maps.New("Runner"); err != nil {
-		t.Error("Error:", err, data)
-	} else {
-		t.Log(reflect.TypeOf(data))
-	}
-
 }
 
 ///////////////////////加载事例///////////////////////////
@@ -49,7 +38,7 @@ func TestLoadTree(t *testing.T) {
 	treeConfig, ok := config.LoadTreeCfg("tree.json")
 	if ok {
 		//自定义节点注册
-		maps := b3.NewRegisterStructMaps()
+		maps := core.NewRegisterStructMaps()
 		maps.Register("Log", new(LogTest))
 
 		//载入

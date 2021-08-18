@@ -24,7 +24,7 @@ func (this *SubTree) OnTick(tick *Tick) b3.Status {
 
 	//使用子树，必须先SetSubTreeLoadFunc
 	//子树可能没有加载上来，所以要延迟加载执行
-	sTree := subTreeLoadFunc(this.GetName())
+	sTree := subTreeLoadFunc(this.GetTitle())
 	if nil == sTree {
 		return b3.ERROR
 	}

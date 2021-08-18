@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/config"
 	"github.com/magicsea/behavior3go/core"
 	"github.com/magicsea/behavior3go/examples/share"
@@ -19,7 +18,7 @@ func main() {
 		return
 	}
 	//自定义节点注册
-	maps := b3.NewRegisterStructMaps()
+	maps := core.NewRegisterStructMaps()
 	maps.Register("Log", new(share.LogTest))
 
 	//载入
@@ -32,5 +31,4 @@ func main() {
 	for i := 0; i < 5; i++ {
 		tree.Tick(i, board)
 	}
-
 }

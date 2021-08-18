@@ -1,13 +1,11 @@
-package behavior3go
+package core
 
 import (
 	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
-	"fmt"
 	"io"
-	"reflect"
 )
 
 
@@ -67,42 +65,33 @@ func MinInt(a int, b int) int {
 }
 
 //定义注册结构map
-type RegisterStructMaps struct {
-	maps map[string]reflect.Type
+type  RegisterStructMaps struct {
+	nodes map[string]IBaseNode
 }
 
 func NewRegisterStructMaps() *RegisterStructMaps {
-	return &RegisterStructMaps{make(map[string]reflect.Type)}
-}
-
-//根据name初始化结构
-//在这里根据结构的成员注解进行DI注入，这里没有实现，只是简单都初始化
-func (rsm *RegisterStructMaps) New(name string) (interface{}, error) {
-	//fmt.Println("New ", name)
-	var c interface{}
-	var err error
-	if v, ok := rsm.maps[name]; ok {
-		c = reflect.New(v).Interface()
-		//fmt.Println("found ", name, "  ", reflect.TypeOf(c))
-		return c, nil
-	} else {
-		err = fmt.Errorf("not found %s struct", name)
-		//fmt.Println("New no found", name, "  ", len(rsm.maps))
+	return &RegisterStructMaps{
+		nodes: make(map[string]IBaseNode),
 	}
-	return nil, err
 }
 
-//查询是否存在
-func (rsm *RegisterStructMaps) CheckElem(name string) bool {
-	if _, ok := rsm.maps[name]; ok {
+//根据名字注册实例
+func (rsm *RegisterStructMaps) Register(name string, node IBaseNode) {
+	rsm.nodes[name] = node
+}
+
+func (rsm *RegisterStructMaps) CheckNode(name string) bool {
+	if _, ok := rsm.nodes[name]; ok {
 		return true
 	}
 	return false
 }
 
-//根据名字注册实例
-func (rsm *RegisterStructMaps) Register(name string, c interface{}) {
-	rsm.maps[name] = reflect.TypeOf(c).Elem()
+func (rsm *RegisterStructMaps) GetNode(name string) IBaseNode {
+	if node, ok := rsm.nodes[name]; ok {
+		return node
+	}
+	return nil
 }
 
-
+type NodeFactory func() IBaseNode

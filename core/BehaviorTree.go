@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/config"
 )
@@ -127,7 +126,7 @@ func NewBeTree() *BehaviorTree {
  * @construCtor
 **/
 func (this *BehaviorTree) Initialize() {
-	this.id = b3.CreateUUID()
+	this.id = CreateUUID()
 	this.title = "The behavior tree"
 	this.description = "Default description"
 	this.properties = make(map[string]interface{})
@@ -179,15 +178,14 @@ func  (this *BehaviorTree) GetRoot() IBaseNode {
  * @param {Object} data The data structure representing a Behavior Tree.
  * @param {Object} [names] A namespace or dict containing custom nodes.
 **/
-func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps *b3.RegisterStructMaps, extMaps *b3.RegisterStructMaps) {
-	this.title = data.Title             //|| this.title;
+func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeFactory, extMaps *RegisterStructMaps) {
+	this.title = data.Title             // || this.title;
 	this.description = data.Description // || this.description;
 	this.properties = data.Properties   // || this.properties;
 	this.dumpInfo = data
 	nodes := make(map[string]IBaseNode)
 
 	// Create the node list (without connection between them)
-
 	for id, s := range data.Nodes {
 		spec := &s
 		var node IBaseNode
@@ -195,24 +193,16 @@ func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps *b3.RegisterStructMa
 		if spec.Category == "tree" {
 			node = new(SubTree)
 		} else {
-			if extMaps != nil && extMaps.CheckElem(spec.Name) {
-				// Look for the name in custom nodes
-				if tnode, err := extMaps.New(spec.Name); err == nil {
-					node = tnode.(IBaseNode)
-				}
-			} else {
-				if tnode, err2 := maps.New(spec.Name); err2 == nil {
-					node = tnode.(IBaseNode)
-				} else {
-					//fmt.Println("new ", spec.Name, " err:", err2)
-				}
+			if extMaps != nil && extMaps.CheckNode(spec.Name) {
+				node = extMaps.GetNode(spec.Name)
+			} else if factory, ok := maps[spec.Name]; ok {
+				node = factory()
 			}
 		}
 
 		if node == nil {
 			// Invalid node name
 			panic("BehaviorTree.load: Invalid node name:" + spec.Name + ",title:" + spec.Title)
-
 		}
 
 		node.Ctor()
@@ -297,7 +287,7 @@ func (this *BehaviorTree) Tick(target interface{}, blackboard *Blackboard) b3.St
 
 	// does not close if it is still open in this tick
 	var start = 0
-	for i := 0; i < b3.MinInt(len(lastOpenNodes), len(currOpenNodes)); i++ {
+	for i := 0; i < MinInt(len(lastOpenNodes), len(currOpenNodes)); i++ {
 		start = i + 1
 		if lastOpenNodes[i] != currOpenNodes[i] {
 			break
@@ -347,5 +337,4 @@ func printNode(root IBaseNode, blk int) {
 			}
 		}
 	}
-
 }
