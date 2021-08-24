@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"reflect"
+	"sync"
 )
 /**
  * The Blackboard is the memory structure required by `BehaviorTree` and its
@@ -56,37 +57,44 @@ func NewTreeData() *TreeData {
 
 //------------------------Memory-------------------------
 type Memory struct {
-	_memory map[string]interface{}
+	memory *sync.Map
 }
 
 func NewMemory() *Memory {
-	return &Memory{make(map[string]interface{})}
+	return &Memory{memory: &sync.Map{}}
 }
 
-func (this *Memory) Get(key string) interface{} {
-	return this._memory[key]
+func (m *Memory) Get(key string) interface{} {
+	rs, ok := m.memory.Load(key)
+	if ok {
+		return rs
+	}
+	return nil
 }
-func (this *Memory) Set(key string, val interface{}) {
-	this._memory[key] = val
+
+func (m *Memory) Set(key string, val interface{}) {
+	m.memory.Store(key, val)
 }
-func (this *Memory) Remove(key string) {
-	delete(this._memory,key)
+
+func (m *Memory) Remove(key string) {
+	m.memory.Delete(key)
 }
+
 //------------------------TreeMemory-------------------------
 type TreeMemory struct {
-	*Memory
-	_treeData   *TreeData
-	_nodeMemory map[string]*Memory
+	memory *Memory
+	treeData   *TreeData
+	nodeMemory *sync.Map
 }
 
 func NewTreeMemory() *TreeMemory {
-	return &TreeMemory{NewMemory(), NewTreeData(), make(map[string]*Memory)}
+	return &TreeMemory{NewMemory(), NewTreeData(), &sync.Map{}}
 }
 
 //------------------------Blackboard-------------------------
 type Blackboard struct {
-	_baseMemory *Memory
-	_treeMemory map[string]*TreeMemory
+	baseMemory *Memory
+	treeMemory *sync.Map
 }
 
 func NewBlackboard() *Blackboard {
@@ -96,8 +104,8 @@ func NewBlackboard() *Blackboard {
 }
 
 func (this *Blackboard) Initialize() {
-	this._baseMemory = NewMemory()
-	this._treeMemory = make(map[string]*TreeMemory)
+	this.baseMemory = NewMemory()
+	this.treeMemory = &sync.Map{}
 }
 
 /**
@@ -110,10 +118,12 @@ func (this *Blackboard) Initialize() {
  * @protected
 **/
 func (this *Blackboard) _getTreeMemory(treeScope string) *TreeMemory {
-	if _, ok := this._treeMemory[treeScope]; !ok {
-		this._treeMemory[treeScope] = NewTreeMemory()
+	if rs, ok := this.treeMemory.Load(treeScope); ok {
+		return rs.(*TreeMemory)
 	}
-	return this._treeMemory[treeScope]
+	tm := NewTreeMemory()
+	this.treeMemory.Store(treeScope, tm)
+	return tm
 }
 
 /**
@@ -127,12 +137,12 @@ func (this *Blackboard) _getTreeMemory(treeScope string) *TreeMemory {
  * @protected
 **/
 func (this *Blackboard) _getNodeMemory(treeMemory *TreeMemory, nodeScope string) *Memory {
-	memory := treeMemory._nodeMemory
-	if _, ok := memory[nodeScope]; !ok {
-		memory[nodeScope] = NewMemory()
+	if rs, ok := treeMemory.nodeMemory.Load(nodeScope); ok {
+		return rs.(*Memory)
 	}
-
-	return memory[nodeScope]
+	memory := NewMemory()
+	treeMemory.nodeMemory.Store(nodeScope, memory)
+	return memory
 }
 
 /**
@@ -150,11 +160,11 @@ func (this *Blackboard) _getNodeMemory(treeMemory *TreeMemory, nodeScope string)
  * @protected
 **/
 func (this *Blackboard) _getMemory(treeScope, nodeScope string) *Memory {
-	var memory = this._baseMemory
+	var memory = this.baseMemory
 
 	if len(treeScope) > 0 {
 		treeMem := this._getTreeMemory(treeScope)
-		memory = treeMem.Memory
+		memory = treeMem.memory
 		if len(nodeScope) > 0 {
 			memory = this._getNodeMemory(treeMem, nodeScope)
 		}
@@ -199,7 +209,7 @@ func (this *Blackboard) SetTree(key string, value interface{}, treeScope string)
 }
 func (this *Blackboard) _getTreeData(treeScope string) *TreeData {
 	treeMem := this._getTreeMemory(treeScope)
-	return treeMem._treeData
+	return treeMem.treeData
 }
 
 /**
@@ -307,37 +317,3 @@ func ReadNumberToUInt64(v interface{}) uint64 {
 	}
 	return ret
 }
-//
-//func ReadNumberToInt32(v interface{}) int32 {
-//	var ret int32
-//	switch tvalue := v.(type) {
-//	case uint16, int16,uint32, int32,uint64,int64,uint16, int16,int:
-//		ret = int32(tvalue)
-//	default:
-//		panic(fmt.Sprintf("错误的类型转成Int32 %v:%+v", reflect.TypeOf(v), v))
-//	}
-//	return ret
-//}
-//
-//func ReadNumberToUInt32(v interface{}) uint32 {
-//	var ret uint32
-//	switch tvalue := v.(type) {
-//	case uint16, int16,uint32, int32,uint64,int64,uint16, int16,int:
-//		ret = uint32(tvalue)
-//	default:
-//		panic(fmt.Sprintf("错误的类型转成UInt32 %v:%+v", reflect.TypeOf(v), v))
-//	}
-//	return ret
-//}
-//
-//
-//func ReadNumberToInt(v interface{}) int {
-//	var ret int
-//	switch tvalue := v.(type) {
-//	case uint16, int16,uint32, int32,uint64,int64,uint16, int16,int:
-//		ret = int(tvalue)
-//	default:
-//		panic(fmt.Sprintf("int %v:%+v", reflect.TypeOf(v), v))
-//	}
-//	return ret
-//}

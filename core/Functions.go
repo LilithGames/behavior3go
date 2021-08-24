@@ -66,18 +66,18 @@ func MinInt(a int, b int) int {
 
 //定义注册结构map
 type  RegisterStructMaps struct {
-	nodes map[string]IBaseNode
+	nodes map[string]NodeCreator
 }
 
 func NewRegisterStructMaps() *RegisterStructMaps {
 	return &RegisterStructMaps{
-		nodes: make(map[string]IBaseNode),
+		nodes: make(map[string]NodeCreator),
 	}
 }
 
 //根据名字注册实例
-func (rsm *RegisterStructMaps) Register(name string, node IBaseNode) {
-	rsm.nodes[name] = node
+func (rsm *RegisterStructMaps) Register(name string, factory NodeCreator) {
+	rsm.nodes[name] = factory
 }
 
 func (rsm *RegisterStructMaps) CheckNode(name string) bool {
@@ -87,11 +87,11 @@ func (rsm *RegisterStructMaps) CheckNode(name string) bool {
 	return false
 }
 
-func (rsm *RegisterStructMaps) GetNode(name string) IBaseNode {
+func (rsm *RegisterStructMaps) GetNode(name string) NodeCreator {
 	if node, ok := rsm.nodes[name]; ok {
 		return node
 	}
 	return nil
 }
 
-type NodeFactory func() IBaseNode
+type NodeCreator func() IBaseNode

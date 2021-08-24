@@ -9,8 +9,8 @@ import (
 	"github.com/magicsea/behavior3go/decorators"
 )
 
-func createBaseFactoryMaps() map[string]core.NodeFactory {
-	result := make(map[string]core.NodeFactory)
+func createBaseFactoryMaps() map[string]core.NodeCreator {
+	result := make(map[string]core.NodeCreator)
 	result["Error"] = func() core.IBaseNode {
 		return &actions.Error{}
 	}
@@ -40,6 +40,9 @@ func createBaseFactoryMaps() map[string]core.NodeFactory {
 	}
 	result["Sequence"] = func() core.IBaseNode {
 		return &composites.Sequence{}
+	}
+	result["Parallel"] = func() core.IBaseNode {
+		return &composites.Parallel{}
 	}
 	result["Inverter"] = func() core.IBaseNode {
 		return &decorators.Inverter{}
