@@ -9,6 +9,6 @@ type Failer struct {
 	core.Action
 }
 
-func (this *Failer) OnTick(tick *core.Tick) b3.Status {
+func (f *Failer) OnTick(tick *core.Tick) b3.Status {
 	return b3.FAILURE
 }

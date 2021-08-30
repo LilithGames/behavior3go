@@ -31,15 +31,19 @@ type Action struct {
 	BaseWorker
 }
 
-func (this *Action) Ctor() {
-	this.category = b3.ACTION
+func (a *Action) Ctor() {
+	a.category = b3.ACTION
 }
 
-func (this *Action) Initialize(params *config.BTNodeCfg) {
+func (a *Action) Initialize(params *config.BTNodeCfg) {
 
-	//this.id = b3.CreateUUID()
-	this.BaseNode.Initialize(params)
-	//this.BaseNode.IBaseWorker = this
-	this.parameters = make(map[string]interface{})
-	this.properties = make(map[string]interface{})
+	//a.id = b3.CreateUUID()
+	a.BaseNode.Initialize(params)
+	//a.BaseNode.IBaseWorker = a
+	a.parameters = make(map[string]interface{})
+	a.properties = make(map[string]interface{})
+}
+
+func (a *Action) GetClass() string {
+	return b3.ACTION
 }

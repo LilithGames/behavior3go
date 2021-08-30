@@ -17,13 +17,11 @@ type IComposite interface {
 type Composite struct {
 	BaseNode
 	BaseWorker
-
 	children []IBaseNode
 }
 
-func (this *Composite) Ctor() {
-
-	this.category = b3.COMPOSITE
+func (c *Composite) Ctor() {
+	c.category = b3.COMPOSITE
 }
 
 /**
@@ -32,11 +30,9 @@ func (this *Composite) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Composite) Initialize(params *config.BTNodeCfg) {
-	this.BaseNode.Initialize(params)
-	//this.BaseNode.IBaseWorker = this
-	this.children = make([]IBaseNode, 0)
-	//fmt.Println("Composite Initialize")
+func (c *Composite) Initialize(params *config.BTNodeCfg) {
+	c.BaseNode.Initialize(params)
+	c.children = make([]IBaseNode, 0)
 }
 
 /**
@@ -44,20 +40,25 @@ func (this *Composite) Initialize(params *config.BTNodeCfg) {
  * @method GetChildCount
  * @getChildCount
 **/
-func (this *Composite) GetChildCount() int {
-	return len(this.children)
+func (c *Composite) GetChildCount() int {
+	return len(c.children)
 }
 
-//GetChild
-func (this *Composite) GetChild(index int) IBaseNode {
-	return this.children[index]
+// GetChild
+func (c *Composite) GetChild(index int) IBaseNode {
+	return c.children[index]
 }
 
-//AddChild
-func (this *Composite) AddChild(child IBaseNode) {
-	this.children = append(this.children, child)
+// AddChild
+func (c *Composite) AddChild(child IBaseNode) {
+	c.children = append(c.children, child)
 }
-func (this *Composite) tick(tick *Tick) b3.Status {
+
+func (c *Composite) tick(tick *Tick) b3.Status {
 	fmt.Println("tick Composite1")
 	return b3.ERROR
+}
+
+func (c *Composite) GetClass() string {
+	return b3.COMPOSITE
 }

@@ -28,7 +28,5 @@ func LoadProjectCfg(path string) (*BTProjectCfg, bool) {
 		fmt.Println("LoadProjectCfg fail, ummarshal:", err, len(file))
 		return nil, false
 	}
-
-	//fmt.Println("load tree:", tree.Title, " nodes:", len(tree.Nodes))
 	return &project, true
 }

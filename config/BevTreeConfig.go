@@ -103,7 +103,5 @@ func LoadTreeCfg(path string) (*BTTreeCfg, bool) {
 		fmt.Println("fail, ummarshal:", err, len(file))
 		return nil, false
 	}
-
-	//fmt.Println("load tree:", tree.Title, " nodes:", len(tree.Nodes))
 	return &tree, true
 }

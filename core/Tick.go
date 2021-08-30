@@ -80,21 +80,21 @@ func NewTick() *Tick {
  * @method Initialize
  * @construCtor
 **/
-func (this *Tick) Initialize() {
+func (t *Tick) Initialize() {
 	// set by BehaviorTree
-	this.tree = nil
-	this.debug = nil
-	this.target = nil
-	this.Blackboard = nil
+	t.tree = nil
+	t.debug = nil
+	t.target = nil
+	t.Blackboard = nil
 
 	// updated during the tick signal
-	this._openNodes = nil
-	this._openSubtreeNodes = nil
-	this._nodeCount = 0
+	t._openNodes = nil
+	t._openSubtreeNodes = nil
+	t._nodeCount = 0
 }
 
-func (this *Tick) GetTree() *BehaviorTree {
-	return this.tree
+func (t *Tick) GetTree() *BehaviorTree {
+	return t.tree
 }
 
 /**
@@ -103,9 +103,9 @@ func (this *Tick) GetTree() *BehaviorTree {
  * @param {Object} node The node that called this method.
  * @protected
 **/
-func (this *Tick) _enterNode(node IBaseNode) {
-	this._nodeCount++
-	this._openNodes = append(this._openNodes, node)
+func (t *Tick) _enterNode(node IBaseNode) {
+	t._nodeCount++
+	t._openNodes = append(t._openNodes, node)
 
 	// TODO: call debug here
 }
@@ -116,7 +116,7 @@ func (this *Tick) _enterNode(node IBaseNode) {
  * @param {Object} node The node that called this method.
  * @protected
 **/
-func (this *Tick) _openNode(node *BaseNode) {
+func (t *Tick) _openNode(node *BaseNode) {
 	// TODO: call debug here
 }
 
@@ -126,9 +126,9 @@ func (this *Tick) _openNode(node *BaseNode) {
  * @param {Object} node The node that called this method.
  * @protected
 **/
-func (this *Tick) _tickNode(node *BaseNode) {
+func (t *Tick) _tickNode(node *BaseNode) {
 	// TODO: call debug here
-	//fmt.Println("Tick _tickNode :", this.debug, " id:", node.GetID(), node.GetTitle())
+	//fmt.Println("Tick _tickNode :", t.debug, " id:", node.GetID(), node.GetTitle())
 }
 
 /**
@@ -137,23 +137,23 @@ func (this *Tick) _tickNode(node *BaseNode) {
  * @param {Object} node The node that called this method.
  * @protected
 **/
-func (this *Tick) _closeNode(node *BaseNode) {
+func (t *Tick) _closeNode(node *BaseNode) {
 	// TODO: call debug here
 
-	ulen := len(this._openNodes)
+	ulen := len(t._openNodes)
 	if ulen > 0 {
-		this._openNodes = this._openNodes[:ulen-1]
+		t._openNodes = t._openNodes[:ulen-1]
 	}
 
 }
 
-func (this *Tick) pushSubtreeNode(node *SubTree)  {
-	this._openSubtreeNodes = append(this._openSubtreeNodes,node)
+func (t *Tick) pushSubtreeNode(node *SubTree)  {
+	t._openSubtreeNodes = append(t._openSubtreeNodes,node)
 }
-func (this *Tick) popSubtreeNode()  {
-	ulen := len(this._openSubtreeNodes)
+func (t *Tick) popSubtreeNode()  {
+	ulen := len(t._openSubtreeNodes)
 	if ulen>0 {
-		this._openSubtreeNodes = this._openSubtreeNodes[:ulen-1]
+		t._openSubtreeNodes = t._openSubtreeNodes[:ulen-1]
 	}
 }
 
@@ -162,10 +162,10 @@ func (this *Tick) popSubtreeNode()  {
  * return nil when it is runing at major tree
  *
 **/
-func (this *Tick) GetLastSubTree() *SubTree {
-	ulen := len(this._openSubtreeNodes)
+func (t *Tick) GetLastSubTree() *SubTree {
+	ulen := len(t._openSubtreeNodes)
 	if ulen>0 {
-		return this._openSubtreeNodes[ulen-1]
+		return t._openSubtreeNodes[ulen-1]
 	}
 	return nil
 }
@@ -176,10 +176,10 @@ func (this *Tick) GetLastSubTree() *SubTree {
  * @param {Object} node The node that called this method.
  * @protected
 **/
-func (this *Tick) _exitNode(node *BaseNode) {
+func (t *Tick) _exitNode(node *BaseNode) {
 	// TODO: call debug here
 }
 
-func (this *Tick) GetTarget() interface{} {
-	return this.target
+func (t *Tick) GetTarget() interface{} {
+	return t.target
 }

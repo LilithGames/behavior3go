@@ -17,9 +17,8 @@ type Decorator struct {
 	child IBaseNode
 }
 
-func (this *Decorator) Ctor() {
-
-	this.category = b3.DECORATOR
+func (d *Decorator) Ctor() {
+	d.category = b3.DECORATOR
 }
 
 /**
@@ -28,16 +27,20 @@ func (this *Decorator) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Decorator) Initialize(params *config.BTNodeCfg) {
-	this.BaseNode.Initialize(params)
-	//this.BaseNode.IBaseWorker = this
+func (d *Decorator) Initialize(params *config.BTNodeCfg) {
+	d.BaseNode.Initialize(params)
+	//d.BaseNode.IBaseWorker = d
 }
 
 //GetChild
-func (this *Decorator) GetChild() IBaseNode {
-	return this.child
+func (d *Decorator) GetChild() IBaseNode {
+	return d.child
 }
 
-func (this *Decorator) SetChild(child IBaseNode) {
-	this.child = child
+func (d *Decorator) SetChild(child IBaseNode) {
+	d.child = child
+}
+
+func (d *Decorator) GetClass() string {
+	return b3.DECORATOR
 }

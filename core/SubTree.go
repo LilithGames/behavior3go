@@ -11,8 +11,8 @@ type SubTree struct {
 	//tree *BehaviorTree
 }
 
-func (this *SubTree) Initialize(setting *config.BTNodeCfg) {
-	this.Action.Initialize(setting)
+func (t *SubTree) Initialize(setting *config.BTNodeCfg) {
+	t.Action.Initialize(setting)
 }
 /**
  *执行子树
@@ -20,11 +20,11 @@ func (this *SubTree) Initialize(setting *config.BTNodeCfg) {
  *如果子树包含running状态，同时复用了子树会导致歧义。
  *改为只使用一个树，一个tick上下文。
 **/
-func (this *SubTree) OnTick(tick *Tick) b3.Status {
+func (t *SubTree) OnTick(tick *Tick) b3.Status {
 
 	//使用子树，必须先SetSubTreeLoadFunc
 	//子树可能没有加载上来，所以要延迟加载执行
-	sTree := subTreeLoadFunc(this.GetTitle())
+	sTree := subTreeLoadFunc(t.GetTitle())
 	if nil == sTree {
 		return b3.ERROR
 	}
@@ -36,14 +36,15 @@ func (this *SubTree) OnTick(tick *Tick) b3.Status {
 	//tar := tick.GetTarget()
 	//return sTree.Tick(tar, tick.Blackboard)
 
-	tick.pushSubtreeNode(this)
+	tick.pushSubtreeNode(t)
+	sTree.id = t.GetID()
 	ret := sTree.GetRoot().Execute(tick)
 	tick.popSubtreeNode()
 	return ret
 }
 
-func (this *SubTree) String() string  {
-	return "SBT_"+this.GetTitle()
+func (t *SubTree) String() string  {
+	return "SBT_"+ t.GetTitle()
 }
 
 

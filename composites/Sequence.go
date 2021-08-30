@@ -16,13 +16,16 @@ type Sequence struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *Sequence) OnTick(tick *core.Tick) b3.Status {
-	//fmt.Println("tick Sequence :", this.GetTitle())
-	for i := 0; i < this.GetChildCount(); i++ {
-		var status = this.GetChild(i).Execute(tick)
+func (s *Sequence) OnTick(tick *core.Tick) b3.Status {
+	for i := 0; i < s.GetChildCount(); i++ {
+		var status = s.GetChild(i).Execute(tick)
 		if status != b3.SUCCESS {
 			return status
 		}
 	}
 	return b3.SUCCESS
+}
+
+func (s *Sequence) GetClass() string {
+	return b3.SEQUENCE
 }

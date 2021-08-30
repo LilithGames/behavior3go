@@ -15,15 +15,22 @@ type IBaseWrapper interface {
 }
 type IBaseNode interface {
 	IBaseWrapper
-
+	GetID() string
+	GetParentID() string
+	SetTreeID(id string)
+	GetTreeID() string
 	Ctor()
 	Initialize(params *config.BTNodeCfg)
 	GetCategory() string
 	Execute(tick *Tick) b3.Status
 	GetName() string
 	GetTitle() string
+	GetParent() IBaseNode
+	SetParent(node IBaseNode)
 	SetBaseNodeWorker(worker IBaseWorker)
 	GetBaseNodeWorker() IBaseWorker
+	GetValueFromAncestor(key string, blackboard *Blackboard) interface{}
+	GetClass() string
 }
 
 /**
@@ -115,25 +122,28 @@ type BaseNode struct {
 	 * @readonly
 	**/
 	properties map[string]interface{}
+
+	parent IBaseNode
+
+	treeID string
 }
 
-func (this *BaseNode) Ctor() {
-
+func (n *BaseNode) Ctor() {
 }
 
-func (this *BaseNode) SetName(name string) {
-	this.name = name
+func (n *BaseNode) SetName(name string) {
+	n.name = name
 }
-func (this *BaseNode) SetTitle(name string) {
-	this.name = name
-}
-
-func (this *BaseNode) SetBaseNodeWorker(worker IBaseWorker) {
-	this.IBaseWorker = worker
+func (n *BaseNode) SetTitle(name string) {
+	n.name = name
 }
 
-func (this *BaseNode) GetBaseNodeWorker() IBaseWorker {
-	return this.IBaseWorker
+func (n *BaseNode) SetBaseNodeWorker(worker IBaseWorker) {
+	n.IBaseWorker = worker
+}
+
+func (n *BaseNode) GetBaseNodeWorker() IBaseWorker {
+	return n.IBaseWorker
 }
 
 /**
@@ -141,35 +151,72 @@ func (this *BaseNode) GetBaseNodeWorker() IBaseWorker {
  * @method Initialize
  * @construCtor
 **/
-func (this *BaseNode) Initialize(params *config.BTNodeCfg) {
-	//this.id = b3.CreateUUID()
-	//this.title       = this.title || this.name
-	this.description = ""
-	this.parameters = make(map[string]interface{})
-	this.properties = make(map[string]interface{})
+func (n *BaseNode) Initialize(params *config.BTNodeCfg) {
+	n.description = ""
+	n.parameters = make(map[string]interface{})
+	n.properties = make(map[string]interface{})
 
-	this.id = params.Id //|| node.id;
-	this.name = params.Name
-	this.title = params.Title             //|| node.title;
-	this.description = params.Description // || node.description;
-	this.properties = params.Properties   //|| node.properties;
-
+	n.id = params.Id // node.id;
+	n.name = params.Name
+	n.title = params.Title             // node.title;
+	n.description = params.Description // node.description;
+	n.properties = params.Properties   // node.properties;
 }
 
-func (this *BaseNode) GetCategory() string {
-	return this.category
+func (n *BaseNode) GetCategory() string {
+	return n.category
 }
 
-func (this *BaseNode) GetID() string {
-	return this.id
+func (n *BaseNode) GetID() string {
+	return n.id
 }
 
-func (this *BaseNode) GetName() string {
-	return this.name
+func (n *BaseNode) GetParentID() string {
+	if n.parent == nil {
+		return ""
+	}
+	return n.parent.GetID()
 }
-func (this *BaseNode) GetTitle() string {
-	//fmt.Println("GetTitle ", this.title)
-	return this.title
+
+func (n *BaseNode) GetName() string {
+	return n.name
+}
+
+func (n *BaseNode) GetTitle() string {
+	return n.title
+}
+
+func (n *BaseNode) GetParent() IBaseNode {
+	return n.parent
+}
+
+func (n *BaseNode) SetParent(parent IBaseNode)  {
+	n.parent = parent
+}
+
+func (n *BaseNode) GetValueFromAncestor(key string, blackboard *Blackboard) interface{} {
+	parent := n.GetParent()
+	for  {
+		if parent == nil {
+			return nil
+		}
+		if v := blackboard.Get(key, n.GetTreeID(), parent.GetID()); v != nil {
+			return v
+		}
+		parent = parent.GetParent()
+	}
+}
+
+func (n *BaseNode) GetTreeID() string {
+	return n.treeID
+}
+
+func (n *BaseNode) SetTreeID(treeID string) {
+	n.treeID = treeID
+}
+
+func (n *BaseNode) GetClass() string {
+	return b3.BASE
 }
 
 /**
@@ -184,31 +231,31 @@ func (this *BaseNode) GetTitle() string {
  * @return {Constant} The tick state.
  * @protected
 **/
-func (this *BaseNode) _execute(tick *Tick) b3.Status {
-	//fmt.Println("_execute :", this.title)
+func (n *BaseNode) _execute(tick *Tick) b3.Status {
+	//fmt.Println("_execute :", n.title)
 	// ENTER
-	this._enter(tick)
+	n._enter(tick)
 
 	// OPEN
-	if !tick.Blackboard.GetBool("isOpen", tick.tree.id, this.id) {
-		this._open(tick)
+	if !tick.Blackboard.GetBool("isOpen", tick.tree.id, n.id) {
+		n._open(tick)
 	}
 
 	// TICK
-	var status = this._tick(tick)
+	var status = n._tick(tick)
 
 	// CLOSE
 	if status != b3.RUNNING {
-		this._close(tick)
+		n._close(tick)
 	}
 
 	// EXIT
-	this._exit(tick)
+	n._exit(tick)
 
 	return status
 }
-func (this *BaseNode) Execute(tick *Tick) b3.Status {
-	return this._execute(tick)
+func (n *BaseNode) Execute(tick *Tick) b3.Status {
+	return n._execute(tick)
 }
 
 /**
@@ -217,9 +264,9 @@ func (this *BaseNode) Execute(tick *Tick) b3.Status {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (this *BaseNode) _enter(tick *Tick) {
-	tick._enterNode(this)
-	this.OnEnter(tick)
+func (n *BaseNode) _enter(tick *Tick) {
+	tick._enterNode(n)
+	n.OnEnter(tick)
 }
 
 /**
@@ -228,11 +275,11 @@ func (this *BaseNode) _enter(tick *Tick) {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (this *BaseNode) _open(tick *Tick) {
-	//fmt.Println("_open :", this.title)
-	tick._openNode(this)
-	tick.Blackboard.Set("isOpen", true, tick.tree.id, this.id)
-	this.OnOpen(tick)
+func (n *BaseNode) _open(tick *Tick) {
+	//fmt.Println("_open :", n.title)
+	tick._openNode(n)
+	tick.Blackboard.Set("isOpen", true, tick.tree.id, n.id)
+	n.OnOpen(tick)
 }
 
 /**
@@ -242,10 +289,10 @@ func (this *BaseNode) _open(tick *Tick) {
  * @return {Constant} A state constant.
  * @protected
 **/
-func (this *BaseNode) _tick(tick *Tick) b3.Status {
-	//fmt.Println("_tick :", this.title)
-	tick._tickNode(this)
-	return this.OnTick(tick)
+func (n *BaseNode) _tick(tick *Tick) b3.Status {
+	//fmt.Println("_tick :", n.title)
+	tick._tickNode(n)
+	return n.OnTick(tick)
 }
 
 /**
@@ -254,10 +301,10 @@ func (this *BaseNode) _tick(tick *Tick) b3.Status {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (this *BaseNode) _close(tick *Tick) {
-	tick._closeNode(this)
-	tick.Blackboard.Set("isOpen", false, tick.tree.id, this.id)
-	this.OnClose(tick)
+func (n *BaseNode) _close(tick *Tick) {
+	tick._closeNode(n)
+	tick.Blackboard.Set("isOpen", false, tick.tree.id, n.id)
+	n.OnClose(tick)
 }
 
 /**
@@ -266,7 +313,7 @@ func (this *BaseNode) _close(tick *Tick) {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (this *BaseNode) _exit(tick *Tick) {
-	tick._exitNode(this)
-	this.OnExit(tick)
+func (n *BaseNode) _exit(tick *Tick) {
+	tick._exitNode(n)
+	n.OnExit(tick)
 }

@@ -62,7 +62,7 @@ type BaseWorker struct {
  * @method enter
  * @param {Tick} tick A tick instance.
 **/
-func (this *BaseWorker) OnEnter(tick *Tick) {
+func (w *BaseWorker) OnEnter(tick *Tick) {
 
 }
 
@@ -75,7 +75,7 @@ func (this *BaseWorker) OnEnter(tick *Tick) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *BaseWorker) OnOpen(tick *Tick) {
+func (w *BaseWorker) OnOpen(tick *Tick) {
 
 }
 
@@ -87,7 +87,7 @@ func (this *BaseWorker) OnOpen(tick *Tick) {
  * @method tick
  * @param {Tick} tick A tick instance.
 **/
-func (this *BaseWorker) OnTick(tick *Tick) b3.Status {
+func (w *BaseWorker) OnTick(tick *Tick) b3.Status {
 	fmt.Println("tick BaseWorker")
 	return b3.ERROR
 }
@@ -100,7 +100,7 @@ func (this *BaseWorker) OnTick(tick *Tick) b3.Status {
  * @method close
  * @param {Tick} tick A tick instance.
 **/
-func (this *BaseWorker) OnClose(tick *Tick) {
+func (w *BaseWorker) OnClose(tick *Tick) {
 
 }
 
@@ -111,6 +111,6 @@ func (this *BaseWorker) OnClose(tick *Tick) {
  * @method exit
  * @param {Tick} tick A tick instance.
 **/
-func (this *BaseWorker) OnExit(tick *Tick) {
+func (w *BaseWorker) OnExit(tick *Tick) {
 
 }

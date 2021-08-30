@@ -35,10 +35,10 @@ type MaxTime struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *MaxTime) Initialize(setting *config.BTNodeCfg) {
-	this.Decorator.Initialize(setting)
-	this.maxTime = setting.GetPropertyAsInt64("maxTime")
-	if this.maxTime < 1 {
+func (t *MaxTime) Initialize(setting *config.BTNodeCfg) {
+	t.Decorator.Initialize(setting)
+	t.maxTime = setting.GetPropertyAsInt64("maxTime")
+	if t.maxTime < 1 {
 		panic("maxTime parameter in Limiter decorator is an obligatory parameter")
 	}
 }
@@ -48,9 +48,9 @@ func (this *MaxTime) Initialize(setting *config.BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *MaxTime) OnOpen(tick *core.Tick) {
-	var startTime int64 = time.Now().UnixNano() / 1000000
-	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), this.GetID())
+func (t *MaxTime) OnOpen(tick *core.Tick) {
+	var startTime = time.Now().UnixNano() / 1000000
+	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), t.GetID())
 }
 
 /**
@@ -59,14 +59,14 @@ func (this *MaxTime) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *MaxTime) OnTick(tick *core.Tick) b3.Status {
-	if this.GetChild() == nil {
+func (t *MaxTime) OnTick(tick *core.Tick) b3.Status {
+	if t.GetChild() == nil {
 		return b3.ERROR
 	}
-	var currTime int64 = time.Now().UnixNano() / 1000000
-	var startTime int64 = tick.Blackboard.GetInt64("startTime", tick.GetTree().GetID(), this.GetID())
-	var status = this.GetChild().Execute(tick)
-	if currTime-startTime > this.maxTime {
+	var currTime = time.Now().UnixNano() / 1000000
+	var startTime int64 = tick.Blackboard.GetInt64("startTime", tick.GetTree().GetID(), t.GetID())
+	var status = t.GetChild().Execute(tick)
+	if currTime-startTime > t.maxTime {
 		return b3.FAILURE
 	}
 

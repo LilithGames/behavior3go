@@ -14,9 +14,8 @@ type Condition struct {
 	BaseWorker
 }
 
-func (this *Condition) Ctor() {
-
-	this.category = b3.CONDITION
+func (c *Condition) Ctor() {
+	c.category = b3.CONDITION
 }
 
 /**
@@ -25,7 +24,10 @@ func (this *Condition) Ctor() {
  * @method Initialize
  * @construCtor
 **/
-func (this *Condition) Initialize(params *config.BTNodeCfg) {
-	this.BaseNode.Initialize(params)
-	//this.BaseNode.IBaseWorker = this
+func (c *Condition) Initialize(params *config.BTNodeCfg) {
+	c.BaseNode.Initialize(params)
+}
+
+func (c *Condition) GetClass() string {
+	return b3.CONDITION
 }

@@ -33,10 +33,10 @@ type RepeatUntilSuccess struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *RepeatUntilSuccess) Initialize(setting *config.BTNodeCfg) {
-	this.Decorator.Initialize(setting)
-	this.maxLoop = setting.GetPropertyAsInt("maxLoop")
-	if this.maxLoop < 1 {
+func (s *RepeatUntilSuccess) Initialize(setting *config.BTNodeCfg) {
+	s.Decorator.Initialize(setting)
+	s.maxLoop = setting.GetPropertyAsInt("maxLoop")
+	if s.maxLoop < 1 {
 		panic("maxLoop parameter in MaxTime decorator is an obligatory parameter")
 	}
 }
@@ -46,8 +46,8 @@ func (this *RepeatUntilSuccess) Initialize(setting *config.BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (this *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
-	tick.Blackboard.Set("i", 0, tick.GetTree().GetID(), this.GetID())
+func (s *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
+	tick.Blackboard.Set("i", 0, tick.GetTree().GetID(), s.GetID())
 }
 
 /**
@@ -56,14 +56,14 @@ func (this *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
-	if this.GetChild() == nil {
+func (s *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
+	if s.GetChild() == nil {
 		return b3.ERROR
 	}
-	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), this.GetID())
+	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), s.GetID())
 	var status = b3.ERROR
-	for this.maxLoop < 0 || i < this.maxLoop {
-		status = this.GetChild().Execute(tick)
+	for s.maxLoop < 0 || i < s.maxLoop {
+		status = s.GetChild().Execute(tick)
 		if status == b3.FAILURE {
 			i++
 		} else {
@@ -71,6 +71,6 @@ func (this *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
 		}
 	}
 
-	tick.Blackboard.Set("i", i, tick.GetTree().GetID(), this.GetID())
+	tick.Blackboard.Set("i", i, tick.GetTree().GetID(), s.GetID())
 	return status
 }

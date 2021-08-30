@@ -9,6 +9,6 @@ type Succeeder struct {
 	core.Action
 }
 
-func (this *Succeeder) OnTick(tick *core.Tick) b3.Status {
+func (s *Succeeder) OnTick(tick *core.Tick) b3.Status {
 	return b3.SUCCESS
 }

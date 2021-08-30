@@ -9,6 +9,14 @@ const (
 	DECORATOR = "decorator"
 	ACTION    = "action"
 	CONDITION = "condition"
+	BASE = "BaseNode"
+	PARALLEL = "Parallel"
+	SUBSCRIPTION = "Subscription"
+	SUBSCRIBER = "Subscriber"
+	SEQUENCE = "Sequence"
+	PRIORITY = "Priority"
+	MEMSEQUENCE = "MemSequence"
+	MEMPRIORITY = "MemPriority"
 )
 
 // Returning status

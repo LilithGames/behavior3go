@@ -184,7 +184,6 @@ func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreat
 	this.properties = data.Properties   // || this.properties;
 	this.dumpInfo = data
 	nodes := make(map[string]IBaseNode)
-
 	// Create the node list (without connection between them)
 	for id, s := range data.Nodes {
 		spec := &s
@@ -208,25 +207,28 @@ func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreat
 		node.Ctor()
 		node.Initialize(spec)
 		node.SetBaseNodeWorker(node.(IBaseWorker))
+		node.SetTreeID(data.ID)
 		nodes[id] = node
 	}
 
 	// Connect the nodes
 	for id, spec := range data.Nodes {
 		node := nodes[id]
-
 		if node.GetCategory() == b3.COMPOSITE && spec.Children != nil {
 			for i := 0; i < len(spec.Children); i++ {
-				var cid = spec.Children[i]
+				cid := spec.Children[i]
+				child := nodes[cid]
 				comp := node.(IComposite)
-				comp.AddChild(nodes[cid])
+				comp.AddChild(child)
+				child.SetParent(node)
 			}
 		} else if node.GetCategory() == b3.DECORATOR && len(spec.Child) > 0 {
 			dec := node.(IDecorator)
-			dec.SetChild(nodes[spec.Child])
+			child := nodes[spec.Child]
+			dec.SetChild(child)
+			child.SetParent(dec)
 		}
 	}
-
 	this.root = nodes[data.Root]
 }
 

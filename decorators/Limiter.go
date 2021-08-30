@@ -32,10 +32,10 @@ type Limiter struct {
  * @param {Object} settings Object with parameters.
  * @construCtor
 **/
-func (this *Limiter) Initialize(setting *config.BTNodeCfg) {
-	this.Decorator.Initialize(setting)
-	this.maxLoop = setting.GetPropertyAsInt("maxLoop")
-	if this.maxLoop < 1 {
+func (l *Limiter) Initialize(setting *config.BTNodeCfg) {
+	l.Decorator.Initialize(setting)
+	l.maxLoop = setting.GetPropertyAsInt("maxLoop")
+	if l.maxLoop < 1 {
 		panic("maxLoop parameter in MaxTime decorator is an obligatory parameter")
 	}
 }
@@ -46,15 +46,15 @@ func (this *Limiter) Initialize(setting *config.BTNodeCfg) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (this *Limiter) OnTick(tick *core.Tick) b3.Status {
-	if this.GetChild() == nil {
+func (l *Limiter) OnTick(tick *core.Tick) b3.Status {
+	if l.GetChild() == nil {
 		return b3.ERROR
 	}
-	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), this.GetID())
-	if i < this.maxLoop {
-		var status = this.GetChild().Execute(tick)
+	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), l.GetID())
+	if i < l.maxLoop {
+		var status = l.GetChild().Execute(tick)
 		if status == b3.SUCCESS || status == b3.FAILURE {
-			tick.Blackboard.Set("i", i+1, tick.GetTree().GetID(), this.GetID())
+			tick.Blackboard.Set("i", i+1, tick.GetTree().GetID(), l.GetID())
 		}
 		return status
 	}

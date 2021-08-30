@@ -103,9 +103,9 @@ func NewBlackboard() *Blackboard {
 	return p
 }
 
-func (this *Blackboard) Initialize() {
-	this.baseMemory = NewMemory()
-	this.treeMemory = &sync.Map{}
+func (b *Blackboard) Initialize() {
+	b.baseMemory = NewMemory()
+	b.treeMemory = &sync.Map{}
 }
 
 /**
@@ -117,12 +117,12 @@ func (this *Blackboard) Initialize() {
  * @return {Object} The tree memory.
  * @protected
 **/
-func (this *Blackboard) _getTreeMemory(treeScope string) *TreeMemory {
-	if rs, ok := this.treeMemory.Load(treeScope); ok {
+func (b *Blackboard) _getTreeMemory(treeScope string) *TreeMemory {
+	if rs, ok := b.treeMemory.Load(treeScope); ok {
 		return rs.(*TreeMemory)
 	}
 	tm := NewTreeMemory()
-	this.treeMemory.Store(treeScope, tm)
+	b.treeMemory.Store(treeScope, tm)
 	return tm
 }
 
@@ -136,7 +136,7 @@ func (this *Blackboard) _getTreeMemory(treeScope string) *TreeMemory {
  * @return {Object} The node memory.
  * @protected
 **/
-func (this *Blackboard) _getNodeMemory(treeMemory *TreeMemory, nodeScope string) *Memory {
+func (b *Blackboard) _getNodeMemory(treeMemory *TreeMemory, nodeScope string) *Memory {
 	if rs, ok := treeMemory.nodeMemory.Load(nodeScope); ok {
 		return rs.(*Memory)
 	}
@@ -159,14 +159,14 @@ func (this *Blackboard) _getNodeMemory(treeMemory *TreeMemory, nodeScope string)
  * @return {Object} A memory object.
  * @protected
 **/
-func (this *Blackboard) _getMemory(treeScope, nodeScope string) *Memory {
-	var memory = this.baseMemory
+func (b *Blackboard) _getMemory(treeScope, nodeScope string) *Memory {
+	var memory = b.baseMemory
 
 	if len(treeScope) > 0 {
-		treeMem := this._getTreeMemory(treeScope)
+		treeMem := b._getTreeMemory(treeScope)
 		memory = treeMem.memory
 		if len(nodeScope) > 0 {
-			memory = this._getNodeMemory(treeMem, nodeScope)
+			memory = b._getNodeMemory(treeMem, nodeScope)
 		}
 	}
 
@@ -189,26 +189,26 @@ func (this *Blackboard) _getMemory(treeScope, nodeScope string) *Memory {
  *                           memory.
  * @param {String} nodeScope The node id if accessing the node memory.
 **/
-func (this *Blackboard) Set(key string, value interface{}, treeScope, nodeScope string) {
-	var memory = this._getMemory(treeScope, nodeScope)
+func (b *Blackboard) Set(key string, value interface{}, treeScope, nodeScope string) {
+	var memory = b._getMemory(treeScope, nodeScope)
 	memory.Set(key, value)
 }
 
-func (this *Blackboard) SetMem(key string, value interface{}) {
-	var memory = this._getMemory("", "")
+func (b *Blackboard) SetMem(key string, value interface{}) {
+	var memory = b._getMemory("", "")
 	memory.Set(key, value)
 }
 
-func (this *Blackboard) Remove(key string) {
-	var memory = this._getMemory("", "")
+func (b *Blackboard) Remove(key string) {
+	var memory = b._getMemory("", "")
 	memory.Remove(key)
 }
-func (this *Blackboard) SetTree(key string, value interface{}, treeScope string) {
-	var memory = this._getMemory(treeScope, "")
+func (b *Blackboard) SetTree(key string, value interface{}, treeScope string) {
+	var memory = b._getMemory(treeScope, "")
 	memory.Set(key, value)
 }
-func (this *Blackboard) _getTreeData(treeScope string) *TreeData {
-	treeMem := this._getTreeMemory(treeScope)
+func (b *Blackboard) _getTreeData(treeScope string) *TreeData {
+	treeMem := b._getTreeMemory(treeScope)
 	return treeMem.treeData
 }
 
@@ -228,67 +228,67 @@ func (this *Blackboard) _getTreeData(treeScope string) *TreeData {
  * @param {String} nodeScope The node id if accessing the node memory.
  * @return {Object} The value stored or undefined.
 **/
-func (this *Blackboard) Get(key, treeScope, nodeScope string) interface{} {
-	memory := this._getMemory(treeScope, nodeScope)
+func (b *Blackboard) Get(key, treeScope, nodeScope string) interface{} {
+	memory := b._getMemory(treeScope, nodeScope)
 	return memory.Get(key)
 }
-func (this *Blackboard) GetMem(key string) interface{} {
-	memory := this._getMemory("","")
+func (b *Blackboard) GetMem(key string) interface{} {
+	memory := b._getMemory("","")
 	return memory.Get(key)
 }
-func (this *Blackboard) GetFloat64(key, treeScope, nodeScope string) float64 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetFloat64(key, treeScope, nodeScope string) float64 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return v.(float64)
 }
-func (this *Blackboard) GetBool(key, treeScope, nodeScope string) bool {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetBool(key, treeScope, nodeScope string) bool {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return false
 	}
 	return v.(bool)
 }
-func (this *Blackboard) GetInt(key, treeScope, nodeScope string) int {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetInt(key, treeScope, nodeScope string) int {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return v.(int)
 }
-func (this *Blackboard) GetInt64(key, treeScope, nodeScope string) int64 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetInt64(key, treeScope, nodeScope string) int64 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return v.(int64)
 }
-func (this *Blackboard) GetUInt64(key, treeScope, nodeScope string) uint64 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetUInt64(key, treeScope, nodeScope string) uint64 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return v.(uint64)
 }
 
-func (this *Blackboard) GetInt64Safe(key, treeScope, nodeScope string) int64 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetInt64Safe(key, treeScope, nodeScope string) int64 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return ReadNumberToInt64(v)
 }
-func (this *Blackboard) GetUInt64Safe(key, treeScope, nodeScope string) uint64 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetUInt64Safe(key, treeScope, nodeScope string) uint64 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
 	return ReadNumberToUInt64(v)
 }
 
-func (this *Blackboard) GetInt32(key, treeScope, nodeScope string) int32 {
-	v := this.Get(key, treeScope, nodeScope)
+func (b *Blackboard) GetInt32(key, treeScope, nodeScope string) int32 {
+	v := b.Get(key, treeScope, nodeScope)
 	if v == nil {
 		return 0
 	}
