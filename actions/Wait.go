@@ -16,7 +16,7 @@ import (
 **/
 type Wait struct {
 	core.Action
-	endTime int64
+	waitTime int64
 }
 
 /**
@@ -33,17 +33,7 @@ type Wait struct {
 **/
 func (w *Wait) Initialize(setting *config.BTNodeCfg) {
 	w.Action.Initialize(setting)
-	w.endTime = setting.GetPropertyAsInt64("milliseconds")
-}
-
-/**
- * Open method.
- * @method open
- * @param {Tick} tick A tick instance.
-**/
-func (w *Wait) OnOpen(tick *core.Tick) {
-	var startTime = time.Now().UnixNano() / 1000000
-	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), w.GetID())
+	w.waitTime = setting.GetPropertyAsInt64("milliseconds")
 }
 
 /**
@@ -53,10 +43,6 @@ func (w *Wait) OnOpen(tick *core.Tick) {
  * @return {Constant} A state constant.
 **/
 func (w *Wait) OnTick(tick *core.Tick) b3.Status {
-	var currTime = time.Now().UnixNano() / 1000000
-	var startTime = tick.Blackboard.GetInt64("startTime", tick.GetTree().GetID(), w.GetID())
-	if currTime-startTime > w.endTime {
-		return b3.SUCCESS
-	}
-	return b3.RUNNING
+	time.Sleep(time.Duration(w.waitTime) * time.Millisecond)
+	return b3.SUCCESS
 }

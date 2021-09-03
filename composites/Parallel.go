@@ -38,7 +38,13 @@ func (p *Parallel) OnTick(tick *core.Tick) b3.Status {
 	for i := 0; i < childNum; i++ {
 		child := p.GetChild(i)
 		go func() {
-			rs <- child.Execute(tick)
+			for {
+				status := child.Execute(tick)
+				if status != b3.RUNNING {
+					rs <- status
+					break
+				}
+			}
 		}()
 	}
 	var finishCount int32
