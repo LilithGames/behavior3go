@@ -7,7 +7,7 @@ import (
 
 type Subscriber struct {
 	core.Action
-	SubTopic func (client interface{}) error
+	SubTopic func (tick *core.Tick, client interface{}) error
 }
 
 func (s *Subscriber) OnTick(tick *core.Tick) b3.Status {
@@ -18,7 +18,7 @@ func (s *Subscriber) OnTick(tick *core.Tick) b3.Status {
 	if s.SubTopic == nil {
 		return b3.FAILURE
 	}
-	err := s.SubTopic(value)
+	err := s.SubTopic(tick, value)
 	if err != nil {
 		return b3.FAILURE
 	}
