@@ -14,8 +14,8 @@ type MemPriority struct {
  * @method open
  * @param {b3.Tick} tick A tick instance.
 **/
-func (p *MemPriority) OnOpen(tick *core.Tick) {
-	tick.Blackboard.Set("runningChild", 0, tick.GetTree().GetID(), p.GetID())
+func (p *MemPriority) OnOpen(tick core.Ticker) {
+	tick.Blackboard().Set("runningChild", 0, tick.GetTree().GetID(), p.GetID())
 }
 
 /**
@@ -24,14 +24,14 @@ func (p *MemPriority) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (p *MemPriority) OnTick(tick *core.Tick) b3.Status {
-	var child = tick.Blackboard.GetInt("runningChild", tick.GetTree().GetID(), p.GetID())
+func (p *MemPriority) OnTick(tick core.Ticker) b3.Status {
+	var child = tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), p.GetID())
 	for i := child; i < p.GetChildCount(); i++ {
 		var status = p.GetChild(i).Execute(tick)
 
 		if status != b3.FAILURE {
 			if status == b3.RUNNING {
-				tick.Blackboard.Set("runningChild", i, tick.GetTree().GetID(), p.GetID())
+				tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), p.GetID())
 			}
 
 			return status

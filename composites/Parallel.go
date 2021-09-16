@@ -18,12 +18,12 @@ type Parallel struct {
  * @method open
  * @param {b3.Tick} tick A tick instance.
 **/
-func (p *Parallel) OnOpen(tick *core.Tick) {
+func (p *Parallel) OnOpen(tick core.Ticker) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p.cancel = cancel
 	p.subNum = 0
-	tick.Blackboard.Set("cancelCtx", ctx, p.GetTreeID(), p.GetID())
-	tick.Blackboard.Set("subSum", &p.subNum, p.GetTreeID(), p.GetID())
+	tick.Blackboard().Set("cancelCtx", ctx, p.GetTreeID(), p.GetID())
+	tick.Blackboard().Set("subSum", &p.subNum, p.GetTreeID(), p.GetID())
 }
 
 /**
@@ -32,7 +32,7 @@ func (p *Parallel) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (p *Parallel) OnTick(tick *core.Tick) b3.Status {
+func (p *Parallel) OnTick(tick core.Ticker) b3.Status {
 	childNum := p.GetChildCount()
 	rs := make(chan b3.Status, childNum)
 	for i := 0; i < childNum; i++ {
@@ -48,15 +48,15 @@ func (p *Parallel) OnTick(tick *core.Tick) b3.Status {
 		}()
 	}
 	var finishCount int32
-	for  {
+	for {
 		select {
-		case <- rs:
+		case <-rs:
 			finishCount++
 			if finishCount == int32(childNum) {
 				return b3.SUCCESS
 			}
-		case <- time.After(time.Second):
-			if p.subNum + finishCount == int32(childNum) {
+		case <-time.After(time.Second):
+			if p.subNum+finishCount == int32(childNum) {
 				p.cancel()
 			}
 		}

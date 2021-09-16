@@ -1,7 +1,6 @@
 package composites
 
 import (
-
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
 )
@@ -16,7 +15,7 @@ type Sequence struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (s *Sequence) OnTick(tick *core.Tick) b3.Status {
+func (s *Sequence) OnTick(tick core.Ticker) b3.Status {
 	for i := 0; i < s.GetChildCount(); i++ {
 		var status = s.GetChild(i).Execute(tick)
 		if status != b3.SUCCESS {

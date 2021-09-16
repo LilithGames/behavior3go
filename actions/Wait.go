@@ -42,7 +42,7 @@ func (w *Wait) Initialize(setting *config.BTNodeCfg) {
  * @param {Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (w *Wait) OnTick(tick *core.Tick) b3.Status {
+func (w *Wait) OnTick(tick core.Ticker) b3.Status {
 	time.Sleep(time.Duration(w.waitTime) * time.Millisecond)
 	return b3.SUCCESS
 }

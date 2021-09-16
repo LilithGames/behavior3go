@@ -5,18 +5,18 @@ const (
 	VERSION = "0.2.0"
 
 	// Node categories
-	COMPOSITE = "composite"
-	DECORATOR = "decorator"
-	ACTION    = "action"
-	CONDITION = "condition"
-	BASE = "BaseNode"
-	PARALLEL = "Parallel"
+	COMPOSITE    = "composite"
+	DECORATOR    = "decorator"
+	ACTION       = "action"
+	CONDITION    = "condition"
+	BASE         = "BaseNode"
+	PARALLEL     = "Parallel"
 	SUBSCRIPTION = "Subscription"
-	SUBSCRIBER = "Subscriber"
-	SEQUENCE = "Sequence"
-	PRIORITY = "Priority"
-	MEMSEQUENCE = "MemSequence"
-	MEMPRIORITY = "MemPriority"
+	SUBSCRIBER   = "Subscriber"
+	SEQUENCE     = "Sequence"
+	PRIORITY     = "Priority"
+	MEMSEQUENCE  = "MemSequence"
+	MEMPRIORITY  = "MemPriority"
 )
 
 // Returning status

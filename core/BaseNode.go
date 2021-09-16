@@ -6,12 +6,12 @@ import (
 )
 
 type IBaseWrapper interface {
-	_execute(tick *Tick) b3.Status
-	_enter(tick *Tick)
-	_open(tick *Tick)
-	_tick(tick *Tick) b3.Status
-	_close(tick *Tick)
-	_exit(tick *Tick)
+	_execute(tick Ticker) b3.Status
+	_enter(tick Ticker)
+	_open(tick Ticker)
+	_tick(tick Ticker) b3.Status
+	_close(tick Ticker)
+	_exit(tick Ticker)
 }
 type IBaseNode interface {
 	IBaseWrapper
@@ -22,7 +22,7 @@ type IBaseNode interface {
 	Ctor()
 	Initialize(params *config.BTNodeCfg)
 	GetCategory() string
-	Execute(tick *Tick) b3.Status
+	Execute(tick Ticker) b3.Status
 	GetName() string
 	GetTitle() string
 	GetParent() IBaseNode
@@ -190,13 +190,13 @@ func (n *BaseNode) GetParent() IBaseNode {
 	return n.parent
 }
 
-func (n *BaseNode) SetParent(parent IBaseNode)  {
+func (n *BaseNode) SetParent(parent IBaseNode) {
 	n.parent = parent
 }
 
 func (n *BaseNode) GetValueFromAncestor(key string, blackboard *Blackboard) interface{} {
 	parent := n.GetParent()
-	for  {
+	for {
 		if parent == nil {
 			return nil
 		}
@@ -231,13 +231,13 @@ func (n *BaseNode) GetClass() string {
  * @return {Constant} The tick state.
  * @protected
 **/
-func (n *BaseNode) _execute(tick *Tick) b3.Status {
+func (n *BaseNode) _execute(tick Ticker) b3.Status {
 	//fmt.Println("_execute :", n.title)
 	// ENTER
 	n._enter(tick)
 
 	// OPEN
-	if !tick.Blackboard.GetBool("isOpen", tick.tree.id, n.id) {
+	if !tick.Blackboard().GetBool("isOpen", tick.GetTree().id, n.id) {
 		n._open(tick)
 	}
 
@@ -254,7 +254,7 @@ func (n *BaseNode) _execute(tick *Tick) b3.Status {
 
 	return status
 }
-func (n *BaseNode) Execute(tick *Tick) b3.Status {
+func (n *BaseNode) Execute(tick Ticker) b3.Status {
 	return n._execute(tick)
 }
 
@@ -264,7 +264,7 @@ func (n *BaseNode) Execute(tick *Tick) b3.Status {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (n *BaseNode) _enter(tick *Tick) {
+func (n *BaseNode) _enter(tick Ticker) {
 	tick._enterNode(n)
 	n.OnEnter(tick)
 }
@@ -275,10 +275,10 @@ func (n *BaseNode) _enter(tick *Tick) {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (n *BaseNode) _open(tick *Tick) {
+func (n *BaseNode) _open(tick Ticker) {
 	//fmt.Println("_open :", n.title)
 	tick._openNode(n)
-	tick.Blackboard.Set("isOpen", true, tick.tree.id, n.id)
+	tick.Blackboard().Set("isOpen", true, tick.GetTree().id, n.id)
 	n.OnOpen(tick)
 }
 
@@ -289,7 +289,7 @@ func (n *BaseNode) _open(tick *Tick) {
  * @return {Constant} A state constant.
  * @protected
 **/
-func (n *BaseNode) _tick(tick *Tick) b3.Status {
+func (n *BaseNode) _tick(tick Ticker) b3.Status {
 	//fmt.Println("_tick :", n.title)
 	tick._tickNode(n)
 	return n.OnTick(tick)
@@ -301,9 +301,9 @@ func (n *BaseNode) _tick(tick *Tick) b3.Status {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (n *BaseNode) _close(tick *Tick) {
+func (n *BaseNode) _close(tick Ticker) {
 	tick._closeNode(n)
-	tick.Blackboard.Set("isOpen", false, tick.tree.id, n.id)
+	tick.Blackboard().Set("isOpen", false, tick.GetTree().id, n.id)
 	n.OnClose(tick)
 }
 
@@ -313,7 +313,7 @@ func (n *BaseNode) _close(tick *Tick) {
  * @param {Tick} tick A tick instance.
  * @protected
 **/
-func (n *BaseNode) _exit(tick *Tick) {
+func (n *BaseNode) _exit(tick Ticker) {
 	tick._exitNode(n)
 	n.OnExit(tick)
 }

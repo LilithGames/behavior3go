@@ -48,9 +48,9 @@ func (t *MaxTime) Initialize(setting *config.BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (t *MaxTime) OnOpen(tick *core.Tick) {
+func (t *MaxTime) OnOpen(tick core.Ticker) {
 	var startTime = time.Now().UnixNano() / 1000000
-	tick.Blackboard.Set("startTime", startTime, tick.GetTree().GetID(), t.GetID())
+	tick.Blackboard().Set("startTime", startTime, tick.GetTree().GetID(), t.GetID())
 }
 
 /**
@@ -59,16 +59,15 @@ func (t *MaxTime) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (t *MaxTime) OnTick(tick *core.Tick) b3.Status {
+func (t *MaxTime) OnTick(tick core.Ticker) b3.Status {
 	if t.GetChild() == nil {
 		return b3.ERROR
 	}
 	var currTime = time.Now().UnixNano() / 1000000
-	var startTime int64 = tick.Blackboard.GetInt64("startTime", tick.GetTree().GetID(), t.GetID())
+	var startTime int64 = tick.Blackboard().GetInt64("startTime", tick.GetTree().GetID(), t.GetID())
 	var status = t.GetChild().Execute(tick)
 	if currTime-startTime > t.maxTime {
 		return b3.FAILURE
 	}
-
 	return status
 }

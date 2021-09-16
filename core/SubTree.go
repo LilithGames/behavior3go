@@ -14,13 +14,14 @@ type SubTree struct {
 func (t *SubTree) Initialize(setting *config.BTNodeCfg) {
 	t.Action.Initialize(setting)
 }
+
 /**
  *执行子树
  *使用sTree.Tick(tar, tick.Blackboard)的方法会导致每个树有自己的tick。
  *如果子树包含running状态，同时复用了子树会导致歧义。
  *改为只使用一个树，一个tick上下文。
 **/
-func (t *SubTree) OnTick(tick *Tick) b3.Status {
+func (t *SubTree) OnTick(tick Ticker) b3.Status {
 
 	//使用子树，必须先SetSubTreeLoadFunc
 	//子树可能没有加载上来，所以要延迟加载执行
@@ -43,10 +44,9 @@ func (t *SubTree) OnTick(tick *Tick) b3.Status {
 	return ret
 }
 
-func (t *SubTree) String() string  {
-	return "SBT_"+ t.GetTitle()
+func (t *SubTree) String() string {
+	return "SBT_" + t.GetTitle()
 }
-
 
 var subTreeLoadFunc func(string) *BehaviorTree
 

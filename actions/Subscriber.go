@@ -7,11 +7,11 @@ import (
 
 type Subscriber struct {
 	core.Action
-	SubTopic func (tick *core.Tick, client interface{}) error
+	SubTopic func(tick core.Ticker, client interface{}) error
 }
 
-func (s *Subscriber) OnTick(tick *core.Tick) b3.Status {
-	value := s.GetValueFromAncestor("subClient", tick.Blackboard)
+func (s *Subscriber) OnTick(tick core.Ticker) b3.Status {
+	value := s.GetValueFromAncestor("subClient", tick.Blackboard())
 	if value == nil {
 		return b3.FAILURE
 	}

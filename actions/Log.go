@@ -18,7 +18,7 @@ func (l *Log) Initialize(setting *config.BTNodeCfg) {
 	l.info = setting.GetPropertyAsString("info")
 }
 
-func (l *Log) OnTick(tick *core.Tick) b3.Status {
+func (l *Log) OnTick(tick core.Ticker) b3.Status {
 	fmt.Println("log:", l.info)
 	return b3.SUCCESS
 }

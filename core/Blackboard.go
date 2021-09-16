@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sync"
 )
+
 /**
  * The Blackboard is the memory structure required by `BehaviorTree` and its
  * nodes. It only have 2 public methods: `set` and `get`. These methods works
@@ -82,7 +83,7 @@ func (m *Memory) Remove(key string) {
 
 //------------------------TreeMemory-------------------------
 type TreeMemory struct {
-	memory *Memory
+	memory     *Memory
 	treeData   *TreeData
 	nodeMemory *sync.Map
 }
@@ -233,7 +234,7 @@ func (b *Blackboard) Get(key, treeScope, nodeScope string) interface{} {
 	return memory.Get(key)
 }
 func (b *Blackboard) GetMem(key string) interface{} {
-	memory := b._getMemory("","")
+	memory := b._getMemory("", "")
 	return memory.Get(key)
 }
 func (b *Blackboard) GetFloat64(key, treeScope, nodeScope string) float64 {
@@ -295,7 +296,7 @@ func (b *Blackboard) GetInt32(key, treeScope, nodeScope string) int32 {
 	return v.(int32)
 }
 
-func ReadNumberToInt64(v interface{})  int64 {
+func ReadNumberToInt64(v interface{}) int64 {
 	var ret int64
 	switch tvalue := v.(type) {
 	case uint64:

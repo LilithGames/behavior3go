@@ -46,8 +46,8 @@ func (s *RepeatUntilSuccess) Initialize(setting *config.BTNodeCfg) {
  * @method open
  * @param {Tick} tick A tick instance.
 **/
-func (s *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
-	tick.Blackboard.Set("i", 0, tick.GetTree().GetID(), s.GetID())
+func (s *RepeatUntilSuccess) OnOpen(tick core.Ticker) {
+	tick.Blackboard().Set("i", 0, tick.GetTree().GetID(), s.GetID())
 }
 
 /**
@@ -56,11 +56,11 @@ func (s *RepeatUntilSuccess) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (s *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
+func (s *RepeatUntilSuccess) OnTick(tick core.Ticker) b3.Status {
 	if s.GetChild() == nil {
 		return b3.ERROR
 	}
-	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), s.GetID())
+	var i = tick.Blackboard().GetInt("i", tick.GetTree().GetID(), s.GetID())
 	var status = b3.ERROR
 	for s.maxLoop < 0 || i < s.maxLoop {
 		status = s.GetChild().Execute(tick)
@@ -71,6 +71,6 @@ func (s *RepeatUntilSuccess) OnTick(tick *core.Tick) b3.Status {
 		}
 	}
 
-	tick.Blackboard.Set("i", i, tick.GetTree().GetID(), s.GetID())
+	tick.Blackboard().Set("i", i, tick.GetTree().GetID(), s.GetID())
 	return status
 }

@@ -54,7 +54,7 @@ func (c *Composite) AddChild(child IBaseNode) {
 	c.children = append(c.children, child)
 }
 
-func (c *Composite) tick(tick *Tick) b3.Status {
+func (c *Composite) tick(tick Ticker) b3.Status {
 	fmt.Println("tick Composite1")
 	return b3.ERROR
 }

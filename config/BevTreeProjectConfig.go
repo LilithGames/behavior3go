@@ -8,10 +8,10 @@ import (
 
 //工程json类型
 type BTProjectCfg struct {
-	ID       string                 `json:"id"`
-	Select string                 `json:"selectedTree"`
-	Scope        string                 `json:"scope"`
-	Trees       []BTTreeCfg   `json:"trees"`
+	ID     string      `json:"id"`
+	Select string      `json:"selectedTree"`
+	Scope  string      `json:"scope"`
+	Trees  []BTTreeCfg `json:"trees"`
 }
 
 //加载

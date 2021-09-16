@@ -1,5 +1,26 @@
 package core
 
+type Ticker interface {
+	Initialize()
+	GetTree() *BehaviorTree
+	GetLastSubTree() *SubTree
+	GetTarget() interface{}
+	Blackboard() *Blackboard
+	_enterNode(node IBaseNode)
+	_openNode(node *BaseNode)
+	_tickNode(node *BaseNode)
+	_closeNode(node *BaseNode)
+	_exitNode(node *BaseNode)
+	nodeCount() int
+	openNodes() []IBaseNode
+	pushSubtreeNode(node *SubTree)
+	popSubtreeNode()
+	setTree(tree *BehaviorTree)
+	setBlackboard(blackboard *Blackboard)
+	setDebug(debug interface{})
+	setTarget(target interface{})
+}
+
 /**
  * A new Tick object is instantiated every tick by BehaviorTree. It is passed
  * as parameter to the nodes through the tree during the traversal.
@@ -18,6 +39,7 @@ package core
  * @class Tick
 **/
 type Tick struct {
+	Ticker
 	/**
 	 * The tree reference.
 	 * @property {b3.BehaviorTree} tree
@@ -41,7 +63,7 @@ type Tick struct {
 	 * @property {b3.Blackboard} blackboard
 	 * @readOnly
 	**/
-	Blackboard *Blackboard
+	blackboard *Blackboard
 	/**
 	 * The list of open nodes. Update during the tree traversal.
 	 * @property {Array} _openNodes
@@ -66,7 +88,6 @@ type Tick struct {
 	 * @readOnly
 	**/
 	_nodeCount int
-
 }
 
 func NewTick() *Tick {
@@ -85,7 +106,7 @@ func (t *Tick) Initialize() {
 	t.tree = nil
 	t.debug = nil
 	t.target = nil
-	t.Blackboard = nil
+	t.blackboard = nil
 
 	// updated during the tick signal
 	t._openNodes = nil
@@ -128,7 +149,6 @@ func (t *Tick) _openNode(node *BaseNode) {
 **/
 func (t *Tick) _tickNode(node *BaseNode) {
 	// TODO: call debug here
-	//fmt.Println("Tick _tickNode :", t.debug, " id:", node.GetID(), node.GetTitle())
 }
 
 /**
@@ -139,7 +159,6 @@ func (t *Tick) _tickNode(node *BaseNode) {
 **/
 func (t *Tick) _closeNode(node *BaseNode) {
 	// TODO: call debug here
-
 	ulen := len(t._openNodes)
 	if ulen > 0 {
 		t._openNodes = t._openNodes[:ulen-1]
@@ -147,12 +166,12 @@ func (t *Tick) _closeNode(node *BaseNode) {
 
 }
 
-func (t *Tick) pushSubtreeNode(node *SubTree)  {
-	t._openSubtreeNodes = append(t._openSubtreeNodes,node)
+func (t *Tick) pushSubtreeNode(node *SubTree) {
+	t._openSubtreeNodes = append(t._openSubtreeNodes, node)
 }
-func (t *Tick) popSubtreeNode()  {
+func (t *Tick) popSubtreeNode() {
 	ulen := len(t._openSubtreeNodes)
-	if ulen>0 {
+	if ulen > 0 {
 		t._openSubtreeNodes = t._openSubtreeNodes[:ulen-1]
 	}
 }
@@ -164,7 +183,7 @@ func (t *Tick) popSubtreeNode()  {
 **/
 func (t *Tick) GetLastSubTree() *SubTree {
 	ulen := len(t._openSubtreeNodes)
-	if ulen>0 {
+	if ulen > 0 {
 		return t._openSubtreeNodes[ulen-1]
 	}
 	return nil
@@ -182,4 +201,32 @@ func (t *Tick) _exitNode(node *BaseNode) {
 
 func (t *Tick) GetTarget() interface{} {
 	return t.target
+}
+
+func (t *Tick) Blackboard() *Blackboard {
+	return t.blackboard
+}
+
+func (t *Tick) setTree(tree *BehaviorTree) {
+	t.tree = tree
+}
+
+func (t *Tick) nodeCount() int {
+	return t._nodeCount
+}
+
+func (t *Tick) openNodes() []IBaseNode {
+	return t._openNodes
+}
+
+func (t *Tick) setBlackboard(blackboard *Blackboard) {
+	t.blackboard = blackboard
+}
+
+func (t *Tick) setDebug(debug interface{}) {
+	t.debug = debug
+}
+
+func (t *Tick) setTarget(target interface{}) {
+	t.target = target
 }

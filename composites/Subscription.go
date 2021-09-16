@@ -23,7 +23,7 @@ type Subscription struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (s *Subscription) OnTick(tick *core.Tick) b3.Status {
+func (s *Subscription) OnTick(tick core.Ticker) b3.Status {
 	if !s.matchCondition() {
 		return b3.FAILURE
 	}
@@ -31,21 +31,21 @@ func (s *Subscription) OnTick(tick *core.Tick) b3.Status {
 		return b3.FAILURE
 	}
 	client := s.ClientCreator()
-	tick.Blackboard.Set("subClient", client, s.GetTreeID(), s.GetID())
+	tick.Blackboard().Set("subClient", client, s.GetTreeID(), s.GetID())
 	for i := 0; i < s.GetChildCount(); i++ {
 		var status = s.GetChild(i).Execute(tick)
 		if status != b3.SUCCESS {
 			return status
 		}
 	}
-	s.registerSubscription(tick.Blackboard)
-	ctxValue := s.GetValueFromAncestor("cancelCtx", tick.Blackboard)
+	s.registerSubscription(tick.Blackboard())
+	ctxValue := s.GetValueFromAncestor("cancelCtx", tick.Blackboard())
 	if ctxValue == nil {
 		return b3.FAILURE
 	}
 	ctx := ctxValue.(context.Context)
 	go client.Run()
-	<- ctx.Done()
+	<-ctx.Done()
 	client.Close()
 	return b3.SUCCESS
 }
@@ -56,7 +56,7 @@ func (s *Subscription) GetClass() string {
 
 func (s *Subscription) matchCondition() bool {
 	parent := s.GetParent()
-	for  {
+	for {
 		if parent == nil {
 			return false
 		}
@@ -70,7 +70,7 @@ func (s *Subscription) matchCondition() bool {
 	}
 }
 
-func (s *Subscription) registerSubscription(board *core.Blackboard)  {
+func (s *Subscription) registerSubscription(board *core.Blackboard) {
 	value := s.GetValueFromAncestor("subSum", board)
 	subSum := value.(*int32)
 	atomic.AddInt32(subSum, 1)

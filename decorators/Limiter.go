@@ -46,15 +46,15 @@ func (l *Limiter) Initialize(setting *config.BTNodeCfg) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (l *Limiter) OnTick(tick *core.Tick) b3.Status {
+func (l *Limiter) OnTick(tick core.Ticker) b3.Status {
 	if l.GetChild() == nil {
 		return b3.ERROR
 	}
-	var i = tick.Blackboard.GetInt("i", tick.GetTree().GetID(), l.GetID())
+	var i = tick.Blackboard().GetInt("i", tick.GetTree().GetID(), l.GetID())
 	if i < l.maxLoop {
 		var status = l.GetChild().Execute(tick)
 		if status == b3.SUCCESS || status == b3.FAILURE {
-			tick.Blackboard.Set("i", i+1, tick.GetTree().GetID(), l.GetID())
+			tick.Blackboard().Set("i", i+1, tick.GetTree().GetID(), l.GetID())
 		}
 		return status
 	}

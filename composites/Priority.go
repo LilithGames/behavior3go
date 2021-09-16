@@ -15,7 +15,7 @@ type Priority struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (p *Priority) OnTick(tick *core.Tick) b3.Status {
+func (p *Priority) OnTick(tick core.Ticker) b3.Status {
 	for i := 0; i < p.GetChildCount(); i++ {
 		var status = p.GetChild(i).Execute(tick)
 		if status != b3.FAILURE {

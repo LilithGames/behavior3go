@@ -23,7 +23,7 @@ type Inverter struct {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (i *Inverter) OnTick(tick *core.Tick) b3.Status {
+func (i *Inverter) OnTick(tick core.Ticker) b3.Status {
 	if i.GetChild() == nil {
 		return b3.ERROR
 	}

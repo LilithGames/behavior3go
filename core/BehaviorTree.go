@@ -146,7 +146,7 @@ func (this *BehaviorTree) SetDebug(debug interface{}) {
 	this.debug = debug
 }
 
-func  (this *BehaviorTree) GetRoot() IBaseNode {
+func (this *BehaviorTree) GetRoot() IBaseNode {
 	return this.root
 }
 
@@ -267,17 +267,16 @@ func (this *BehaviorTree) dump() *config.BTTreeCfg {
  * @param {Blackboard} blackboard An instance of blackboard object.
  * @return {Constant} The tick signal state.
 **/
-func (this *BehaviorTree) Tick(target interface{}, blackboard *Blackboard) b3.Status {
+func (this *BehaviorTree) Tick(tick Ticker, target interface{}, blackboard *Blackboard) b3.Status {
 	if blackboard == nil {
 		panic("The blackboard parameter is obligatory and must be an instance of b3.Blackboard")
 	}
 
 	/* CREATE A TICK OBJECT */
-	var tick = NewTick()
-	tick.debug = this.debug
-	tick.target = target
-	tick.Blackboard = blackboard
-	tick.tree = this
+	tick.setTree(this)
+	tick.setDebug(this.debug)
+	tick.setTarget(target)
+	tick.setBlackboard(blackboard)
 
 	/* TICK NODE */
 	var state = this.root._execute(tick)
@@ -285,7 +284,7 @@ func (this *BehaviorTree) Tick(target interface{}, blackboard *Blackboard) b3.St
 	/* CLOSE NODES FROM LAST TICK, IF NEEDED */
 	var lastOpenNodes = blackboard._getTreeData(this.id).OpenNodes
 	var currOpenNodes []IBaseNode
-	currOpenNodes = append(currOpenNodes, tick._openNodes...)
+	currOpenNodes = append(currOpenNodes, tick.openNodes()...)
 
 	// does not close if it is still open in this tick
 	var start = 0
@@ -303,7 +302,7 @@ func (this *BehaviorTree) Tick(target interface{}, blackboard *Blackboard) b3.St
 
 	/* POPULATE BLACKBOARD */
 	blackboard._getTreeData(this.id).OpenNodes = currOpenNodes
-	blackboard.SetTree("nodeCount", tick._nodeCount, this.id)
+	blackboard.SetTree("nodeCount", tick.nodeCount(), this.id)
 
 	return state
 }

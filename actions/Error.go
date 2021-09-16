@@ -9,6 +9,6 @@ type Error struct {
 	core.Action
 }
 
-func (e *Error) OnTick(tick *core.Tick) b3.Status {
+func (e *Error) OnTick(tick core.Ticker) b3.Status {
 	return b3.ERROR
 }

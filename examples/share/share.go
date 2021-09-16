@@ -18,7 +18,7 @@ func (this *LogTest) Initialize(setting *config.BTNodeCfg) {
 	this.info = setting.GetPropertyAsString("info")
 }
 
-func (this *LogTest) OnTick(tick *core.Tick) b3.Status {
-	fmt.Println("logtest:",tick.GetLastSubTree(), this.info)
+func (this *LogTest) OnTick(tick core.Ticker) b3.Status {
+	fmt.Println("logtest:", tick.GetLastSubTree(), this.info)
 	return b3.SUCCESS
 }

@@ -18,7 +18,7 @@ var mapTreesByID = sync.Map{}
 func init() {
 	//获取子树的方法
 	core.SetSubTreeLoadFunc(func(id string) *core.BehaviorTree {
-		fmt.Println("==>load subtree:",id)
+		fmt.Println("==>load subtree:", id)
 		t, ok := mapTreesByID.Load(id)
 		if ok {
 			return t.(*core.BehaviorTree)
@@ -44,7 +44,7 @@ func main() {
 		tree := loader.CreateBevTreeFromConfig(&v, maps)
 		tree.Print()
 		//保存到树管理
-		println("==>store subtree:",v.ID)
+		println("==>store subtree:", v.ID)
 		mapTreesByID.Store(v.ID, tree)
 		if firstTree == nil {
 			firstTree = tree

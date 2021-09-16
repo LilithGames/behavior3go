@@ -14,8 +14,8 @@ type MemSequence struct {
  * @method open
  * @param {b3.Tick} tick A tick instance.
 **/
-func (s *MemSequence) OnOpen(tick *core.Tick) {
-	tick.Blackboard.Set("runningChild", 0, tick.GetTree().GetID(), s.GetID())
+func (s *MemSequence) OnOpen(tick core.Ticker) {
+	tick.Blackboard().Set("runningChild", 0, tick.GetTree().GetID(), s.GetID())
 }
 
 /**
@@ -24,14 +24,14 @@ func (s *MemSequence) OnOpen(tick *core.Tick) {
  * @param {b3.Tick} tick A tick instance.
  * @return {Constant} A state constant.
 **/
-func (s *MemSequence) OnTick(tick *core.Tick) b3.Status {
-	var child = tick.Blackboard.GetInt("runningChild", tick.GetTree().GetID(), s.GetID())
+func (s *MemSequence) OnTick(tick core.Ticker) b3.Status {
+	var child = tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), s.GetID())
 	for i := child; i < s.GetChildCount(); i++ {
 		var status = s.GetChild(i).Execute(tick)
 
 		if status != b3.SUCCESS {
 			if status == b3.RUNNING {
-				tick.Blackboard.Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
+				tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
 			}
 
 			return status

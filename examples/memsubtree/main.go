@@ -16,12 +16,12 @@ import (
 //所有的树管理
 var mapTreesByID = sync.Map{}
 var maps = core.NewRegisterStructMaps()
+
 func init() {
 	//自定义节点注册
 	maps.Register("Log", new(share.LogTest))
 	maps.Register("SetValue", new(share.SetValue))
 	maps.Register("IsValue", new(share.IsValue))
-
 
 	//获取子树的方法
 	core.SetSubTreeLoadFunc(func(id string) *core.BehaviorTree {
@@ -47,7 +47,7 @@ func main() {
 		tree := loader.CreateBevTreeFromConfig(&v, maps)
 		tree.Print()
 		//保存到树管理
-		println("==>store subtree:",v.ID)
+		println("==>store subtree:", v.ID)
 		mapTreesByID.Store(v.ID, tree)
 		if firstTree == nil {
 			firstTree = tree
@@ -59,6 +59,6 @@ func main() {
 	//循环每一帧
 	for i := 0; i < 100; i++ {
 		firstTree.Tick(i, board)
-		time.Sleep(time.Millisecond*100)
+		time.Sleep(time.Millisecond * 100)
 	}
 }

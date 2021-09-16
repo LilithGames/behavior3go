@@ -8,8 +8,6 @@ import (
 	"io"
 )
 
-
-
 //生成32位md5字串
 func getMd5String(s string) string {
 	h := md5.New()
@@ -65,7 +63,7 @@ func MinInt(a int, b int) int {
 }
 
 //定义注册结构map
-type  RegisterStructMaps struct {
+type RegisterStructMaps struct {
 	nodes map[string]NodeCreator
 }
 
