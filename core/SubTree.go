@@ -30,13 +30,6 @@ func (t *SubTree) OnTick(tick Ticker) b3.Status {
 		return b3.ERROR
 	}
 
-	if tick.GetTarget() == nil {
-		panic("SubTree tick.GetTarget() nil !")
-	}
-
-	//tar := tick.GetTarget()
-	//return sTree.Tick(tar, tick.Blackboard)
-
 	tick.pushSubtreeNode(t)
 	sTree.id = t.GetID()
 	ret := sTree.GetRoot().Execute(tick)
