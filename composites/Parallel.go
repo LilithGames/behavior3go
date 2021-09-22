@@ -39,7 +39,7 @@ func (p *Parallel) OnTick(tick core.Ticker) b3.Status {
 		child := p.GetChild(i)
 		go func() {
 			for {
-				status := child.Execute(tick)
+				status := child.Execute(tick.TearTick())
 				if status != b3.RUNNING {
 					rs <- status
 					break

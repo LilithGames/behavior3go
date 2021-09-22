@@ -3,6 +3,7 @@ package composites
 import (
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
+	"time"
 )
 
 type MemPriority struct {
@@ -28,12 +29,12 @@ func (p *MemPriority) OnTick(tick core.Ticker) b3.Status {
 	var child = tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), p.GetID())
 	for i := child; i < p.GetChildCount(); i++ {
 		var status = p.GetChild(i).Execute(tick)
-
+		for status == b3.RUNNING {
+			tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), p.GetID())
+			time.Sleep(time.Second)
+			status = p.GetChild(i).Execute(tick)
+		}
 		if status != b3.FAILURE {
-			if status == b3.RUNNING {
-				tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), p.GetID())
-			}
-
 			return status
 		}
 	}

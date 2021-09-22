@@ -125,29 +125,29 @@ func NewBeTree() *BehaviorTree {
  * @method Initialize
  * @construCtor
 **/
-func (this *BehaviorTree) Initialize() {
-	this.id = CreateUUID()
-	this.title = "The behavior tree"
-	this.description = "Default description"
-	this.properties = make(map[string]interface{})
-	this.root = nil
-	this.debug = nil
+func (t *BehaviorTree) Initialize() {
+	t.id = CreateUUID()
+	t.title = "The behavior tree"
+	t.description = "Default description"
+	t.properties = make(map[string]interface{})
+	t.root = nil
+	t.debug = nil
 }
 
-func (this *BehaviorTree) GetID() string {
-	return this.id
+func (t *BehaviorTree) GetID() string {
+	return t.id
 }
 
-func (this *BehaviorTree) GetTitile() string {
-	return this.title
+func (t *BehaviorTree) GetTitile() string {
+	return t.title
 }
 
-func (this *BehaviorTree) SetDebug(debug interface{}) {
-	this.debug = debug
+func (t *BehaviorTree) SetDebug(debug interface{}) {
+	t.debug = debug
 }
 
-func (this *BehaviorTree) GetRoot() IBaseNode {
-	return this.root
+func (t *BehaviorTree) GetRoot() IBaseNode {
+	return t.root
 }
 
 /**
@@ -178,11 +178,11 @@ func (this *BehaviorTree) GetRoot() IBaseNode {
  * @param {Object} data The data structure representing a Behavior Tree.
  * @param {Object} [names] A namespace or dict containing custom nodes.
 **/
-func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreator, extMaps *RegisterStructMaps) {
-	this.title = data.Title             // || this.title;
-	this.description = data.Description // || this.description;
-	this.properties = data.Properties   // || this.properties;
-	this.dumpInfo = data
+func (t *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreator, extMaps *RegisterStructMaps) {
+	t.title = data.Title             // || t.title;
+	t.description = data.Description // || t.description;
+	t.properties = data.Properties   // || t.properties;
+	t.dumpInfo = data
 	nodes := make(map[string]IBaseNode)
 	// Create the node list (without connection between them)
 	for id, s := range data.Nodes {
@@ -229,7 +229,7 @@ func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreat
 			child.SetParent(dec)
 		}
 	}
-	this.root = nodes[data.Root]
+	t.root = nodes[data.Root]
 }
 
 /**
@@ -241,8 +241,8 @@ func (this *BehaviorTree) Load(data *config.BTTreeCfg, maps map[string]NodeCreat
  * @method dump
  * @return {Object} A data object representing this tree.
 **/
-func (this *BehaviorTree) dump() *config.BTTreeCfg {
-	return this.dumpInfo
+func (t *BehaviorTree) dump() *config.BTTreeCfg {
+	return t.dumpInfo
 }
 
 /**
@@ -267,26 +267,25 @@ func (this *BehaviorTree) dump() *config.BTTreeCfg {
  * @param {Blackboard} blackboard An instance of blackboard object.
  * @return {Constant} The tick signal state.
 **/
-func (this *BehaviorTree) Tick(tick Ticker, target interface{}, blackboard *Blackboard) b3.Status {
+func (t *BehaviorTree) Tick(tick Ticker, blackboard *Blackboard) b3.Status {
 	if blackboard == nil {
 		panic("The blackboard parameter is obligatory and must be an instance of b3.Blackboard")
 	}
 
 	/* CREATE A TICK OBJECT */
-	tick.setTree(this)
-	tick.setDebug(this.debug)
-	tick.setTarget(target)
+	tick.setTree(t)
+	tick.setDebug(t.debug)
 	tick.setBlackboard(blackboard)
 
 	/* TICK NODE */
-	var state = this.root._execute(tick)
+	var state = t.root._execute(tick)
 
 	/* CLOSE NODES FROM LAST TICK, IF NEEDED */
-	var lastOpenNodes = blackboard._getTreeData(this.id).OpenNodes
+	var lastOpenNodes = blackboard._getTreeData(t.id).OpenNodes
 	var currOpenNodes []IBaseNode
 	currOpenNodes = append(currOpenNodes, tick.openNodes()...)
 
-	// does not close if it is still open in this tick
+	// does not close if it is still open in t tick
 	var start = 0
 	for i := 0; i < MinInt(len(lastOpenNodes), len(currOpenNodes)); i++ {
 		start = i + 1
@@ -301,30 +300,26 @@ func (this *BehaviorTree) Tick(tick Ticker, target interface{}, blackboard *Blac
 	}
 
 	/* POPULATE BLACKBOARD */
-	blackboard._getTreeData(this.id).OpenNodes = currOpenNodes
-	blackboard.SetTree("nodeCount", tick.nodeCount(), this.id)
+	blackboard._getTreeData(t.id).OpenNodes = currOpenNodes
+	blackboard.SetTree("nodeCount", tick.nodeCount(), t.id)
 
 	return state
 }
 
-func (this *BehaviorTree) Print() {
-	printNode(this.root, 0)
+func (t *BehaviorTree) Print() {
+	printNode(t.root, 0)
 }
 
 func printNode(root IBaseNode, blk int) {
 
-	//fmt.Println("new node:", root.Name, " children:", len(root.Children), " child:", root.Child)
 	for i := 0; i < blk; i++ {
 		fmt.Print(" ") //缩进
 	}
-
-	//fmt.Println("|—<", root.Name, ">") //打印"|—<id>"形式
 	fmt.Print("|—", root.GetTitle())
 
 	if root.GetCategory() == b3.DECORATOR {
 		dec := root.(IDecorator)
 		if dec.GetChild() != nil {
-			//fmt.Print("=>")
 			printNode(dec.GetChild(), blk+3)
 		}
 	}

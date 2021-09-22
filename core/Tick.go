@@ -4,8 +4,9 @@ type Ticker interface {
 	Initialize()
 	GetTree() *BehaviorTree
 	GetLastSubTree() *SubTree
-	GetTarget() interface{}
 	Blackboard() *Blackboard
+	Tear(ticker Ticker)
+	TearTick() Ticker
 	_enterNode(node IBaseNode)
 	_openNode(node *BaseNode)
 	_tickNode(node *BaseNode)
@@ -18,7 +19,6 @@ type Ticker interface {
 	setTree(tree *BehaviorTree)
 	setBlackboard(blackboard *Blackboard)
 	setDebug(debug interface{})
-	setTarget(target interface{})
 }
 
 /**
@@ -52,12 +52,6 @@ type Tick struct {
 	 * @readOnly
 	 */
 	debug interface{}
-	/**
-	 * The target object reference.
-	 * @property {Object} target
-	 * @readOnly
-	**/
-	target interface{}
 	/**
 	 * The blackboard reference.
 	 * @property {b3.Blackboard} blackboard
@@ -105,7 +99,6 @@ func (t *Tick) Initialize() {
 	// set by BehaviorTree
 	t.tree = nil
 	t.debug = nil
-	t.target = nil
 	t.blackboard = nil
 
 	// updated during the tick signal
@@ -199,10 +192,6 @@ func (t *Tick) _exitNode(node *BaseNode) {
 	// TODO: call debug here
 }
 
-func (t *Tick) GetTarget() interface{} {
-	return t.target
-}
-
 func (t *Tick) Blackboard() *Blackboard {
 	return t.blackboard
 }
@@ -227,6 +216,18 @@ func (t *Tick) setDebug(debug interface{}) {
 	t.debug = debug
 }
 
-func (t *Tick) setTarget(target interface{}) {
-	t.target = target
+func (t *Tick) Tear(ticker Ticker) {
+	tick := ticker.(*Tick)
+	tick.blackboard = t.blackboard
+	tick._openNodes = append(tick._openNodes, t._openNodes...)
+	tick._nodeCount = t._nodeCount
+	tick.debug = t.debug
+	tick.tree = t.tree
+	tick._openSubtreeNodes = append(tick._openSubtreeNodes, t._openSubtreeNodes...)
+}
+
+func (t *Tick) TearTick() Ticker {
+	tick := NewTick()
+	t.Tear(tick)
+	return tick
 }

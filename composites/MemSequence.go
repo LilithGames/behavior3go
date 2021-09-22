@@ -3,6 +3,7 @@ package composites
 import (
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
+	"time"
 )
 
 type MemSequence struct {
@@ -28,12 +29,12 @@ func (s *MemSequence) OnTick(tick core.Ticker) b3.Status {
 	var child = tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), s.GetID())
 	for i := child; i < s.GetChildCount(); i++ {
 		var status = s.GetChild(i).Execute(tick)
-
+		for status == b3.RUNNING {
+			tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
+			time.Sleep(time.Second)
+			status = s.GetChild(i).Execute(tick)
+		}
 		if status != b3.SUCCESS {
-			if status == b3.RUNNING {
-				tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
-			}
-
 			return status
 		}
 	}

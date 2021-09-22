@@ -232,7 +232,6 @@ func (n *BaseNode) GetClass() string {
  * @protected
 **/
 func (n *BaseNode) _execute(tick Ticker) b3.Status {
-	//fmt.Println("_execute :", n.title)
 	// ENTER
 	n._enter(tick)
 
@@ -276,7 +275,6 @@ func (n *BaseNode) _enter(tick Ticker) {
  * @protected
 **/
 func (n *BaseNode) _open(tick Ticker) {
-	//fmt.Println("_open :", n.title)
 	tick._openNode(n)
 	tick.Blackboard().Set("isOpen", true, tick.GetTree().id, n.id)
 	n.OnOpen(tick)
@@ -290,7 +288,6 @@ func (n *BaseNode) _open(tick Ticker) {
  * @protected
 **/
 func (n *BaseNode) _tick(tick Ticker) b3.Status {
-	//fmt.Println("_tick :", n.title)
 	tick._tickNode(n)
 	return n.OnTick(tick)
 }
