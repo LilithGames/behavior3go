@@ -63,7 +63,7 @@ func (r *Repeater) OnTick(tick core.Ticker) b3.Status {
 	var status = b3.SUCCESS
 	for r.maxLoop < 0 || i < r.maxLoop {
 		status = r.GetChild().Execute(tick)
-		if status == b3.SUCCESS || status == b3.FAILURE {
+		if status == b3.SUCCESS {
 			i++
 		} else {
 			break
