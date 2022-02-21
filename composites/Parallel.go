@@ -2,15 +2,14 @@ package composites
 
 import (
 	"context"
+
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
-	"time"
 )
 
 type Parallel struct {
 	core.Composite
 	cancel context.CancelFunc
-	subNum int32
 }
 
 /**
@@ -21,9 +20,7 @@ type Parallel struct {
 func (p *Parallel) OnOpen(tick core.Ticker) {
 	ctx, cancel := context.WithCancel(context.Background())
 	p.cancel = cancel
-	p.subNum = 0
 	tick.Blackboard().Set("cancelCtx", ctx, p.GetTreeID(), p.GetID())
-	tick.Blackboard().Set("subSum", &p.subNum, p.GetTreeID(), p.GetID())
 }
 
 /**
@@ -35,32 +32,32 @@ func (p *Parallel) OnOpen(tick core.Ticker) {
 func (p *Parallel) OnTick(tick core.Ticker) b3.Status {
 	childNum := p.GetChildCount()
 	rs := make(chan b3.Status, childNum)
+	ctx := tick.Blackboard().Get("cancelCtx", p.GetTreeID(), p.GetID()).(context.Context)
 	for i := 0; i < childNum; i++ {
 		child := p.GetChild(i)
+		nt := tick.TearTick()
 		go func() {
-			for {
-				status := child.Execute(tick.TearTick())
-				if status != b3.RUNNING {
-					rs <- status
-					break
+			status := child.Execute(nt)
+			for status == b3.RUNNING {
+				select {
+				case <-ctx.Done():
+					status = b3.SUCCESS
+				default:
+					status = child.Execute(nt)
 				}
 			}
+			rs <- status
 		}()
 	}
-	var finishCount int32
-	for {
-		select {
-		case <-rs:
-			finishCount++
-			if finishCount == int32(childNum) {
-				return b3.SUCCESS
-			}
-		case <-time.After(time.Second):
-			if p.subNum+finishCount == int32(childNum) {
-				p.cancel()
-			}
-		}
+	var finish int
+	<- rs
+	finish++
+	p.cancel()
+	for finish < childNum {
+		<- rs
+		finish++
 	}
+	return b3.SUCCESS
 }
 
 func (p *Parallel) GetClass() string {

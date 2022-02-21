@@ -2,9 +2,9 @@ package composites
 
 import (
 	"context"
+
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
-	"sync/atomic"
 )
 
 type SubClient interface {
@@ -38,7 +38,6 @@ func (s *Subscription) OnTick(tick core.Ticker) b3.Status {
 			return status
 		}
 	}
-	s.registerSubscription(tick.Blackboard())
 	ctxValue := s.GetValueFromAncestor("cancelCtx", tick.Blackboard())
 	if ctxValue == nil {
 		return b3.FAILURE
@@ -68,10 +67,4 @@ func (s *Subscription) matchCondition() bool {
 		}
 		parent = parent.GetParent()
 	}
-}
-
-func (s *Subscription) registerSubscription(board *core.Blackboard) {
-	value := s.GetValueFromAncestor("subSum", board)
-	subSum := value.(*int32)
-	atomic.AddInt32(subSum, 1)
 }

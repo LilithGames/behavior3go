@@ -1,9 +1,10 @@
 package composites
 
 import (
+	"context"
+
 	b3 "github.com/magicsea/behavior3go"
 	"github.com/magicsea/behavior3go/core"
-	"time"
 )
 
 type MemSequence struct {
@@ -26,13 +27,21 @@ func (s *MemSequence) OnOpen(tick core.Ticker) {
  * @return {Constant} A state constant.
 **/
 func (s *MemSequence) OnTick(tick core.Ticker) b3.Status {
-	var child = tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), s.GetID())
+	child := tick.Blackboard().GetInt("runningChild", tick.GetTree().GetID(), s.GetID())
+	cancelCtx := context.Background()
+	if ctx := s.GetValueFromAncestor("cancelCtx", tick.Blackboard()); ctx != nil {
+		cancelCtx = ctx.(context.Context)
+	}
 	for i := child; i < s.GetChildCount(); i++ {
+		tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
 		var status = s.GetChild(i).Execute(tick)
 		for status == b3.RUNNING {
-			tick.Blackboard().Set("runningChild", i, tick.GetTree().GetID(), s.GetID())
-			time.Sleep(time.Second)
-			status = s.GetChild(i).Execute(tick)
+			select {
+			case <- cancelCtx.Done():
+				status = b3.SUCCESS
+			default:
+				status = s.GetChild(i).Execute(tick)
+			}
 		}
 		if status != b3.SUCCESS {
 			return status
