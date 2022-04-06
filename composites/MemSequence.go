@@ -37,7 +37,7 @@ func (s *MemSequence) OnTick(tick core.Ticker) b3.Status {
 		var status = s.GetChild(i).Execute(tick)
 		for status == b3.RUNNING {
 			select {
-			case <- cancelCtx.Done():
+			case <-cancelCtx.Done():
 				status = b3.SUCCESS
 			default:
 				status = s.GetChild(i).Execute(tick)

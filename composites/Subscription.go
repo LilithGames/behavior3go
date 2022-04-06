@@ -14,7 +14,7 @@ type SubClient interface {
 
 type Subscription struct {
 	core.Composite
-	ClientCreator func() SubClient
+	ClientCreator func(tick core.Ticker) SubClient
 }
 
 /**
@@ -30,7 +30,7 @@ func (s *Subscription) OnTick(tick core.Ticker) b3.Status {
 	if s.ClientCreator == nil {
 		return b3.FAILURE
 	}
-	client := s.ClientCreator()
+	client := s.ClientCreator(tick)
 	tick.Blackboard().Set("subClient", client, s.GetTreeID(), s.GetID())
 	for i := 0; i < s.GetChildCount(); i++ {
 		var status = s.GetChild(i).Execute(tick)

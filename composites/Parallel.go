@@ -50,11 +50,11 @@ func (p *Parallel) OnTick(tick core.Ticker) b3.Status {
 		}()
 	}
 	var finish int
-	<- rs
+	<-rs
 	finish++
 	p.cancel()
 	for finish < childNum {
-		<- rs
+		<-rs
 		finish++
 	}
 	return b3.SUCCESS
